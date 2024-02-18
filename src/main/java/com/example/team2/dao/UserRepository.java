@@ -8,6 +8,8 @@ import java.util.List;
 @Repository
 public interface UserRepository {
     boolean checkId(String id);
+    boolean checkEmail(String email);
+    boolean checkPhone(String phone);
     boolean registerUser(User user);
     boolean loginUser(User user);
     List checkLogin(String id);
@@ -20,4 +22,15 @@ public interface UserRepository {
     String findSendPhone(String id);
     boolean loginPhoneCheckKey(String id, String phoneKey);
     boolean loginPhoneCheckState(String id);
+    boolean equalFindIdEmail(String name, String email);
+    String findIdbyEmail(String email);
+    boolean equalFindIdPhone(String name, String phone);
+    String findIdbyPhone(String phone);
+    boolean equalFindPwEmail(String id, String email);
+    boolean equalFindPwPhone(String id, String phone);
+    boolean saveTempPw(String id, String tempPw);
+    List checkUpdateUserProfile(String id);
+    boolean updateCheckEmail0(String id);
+    boolean updateCheckPhone0(String id);
+    boolean updateUserProfile(User user);
 }

@@ -18,8 +18,18 @@ public class UserRestController {
 
     // id -> bool (true: 중복있음, false: 중복없음)
     @PostMapping("/signup/checkid")
-    public ResponseEntity<Boolean> checkID(@RequestParam String id) {
+    public ResponseEntity<Boolean> checkId(@RequestParam String id) {
         return ResponseEntity.ok(userService.checkId(id));
+    }
+
+    @PostMapping("/signup/checkemail")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+        return ResponseEntity.ok(userService.checkId(email));
+    }
+
+    @PostMapping("/signup/checkphone")
+    public ResponseEntity<Boolean> checkPhone(@RequestParam String phone) {
+        return ResponseEntity.ok(userService.checkId(phone));
     }
 
     // id, pw, name, email, phone -> bool (true: 생성완료)
@@ -67,5 +77,39 @@ public class UserRestController {
     @PostMapping("/login/phonecheck/client")
     public ResponseEntity<Boolean> loginPhoneCheckKey(@RequestParam String id, String phoneKey) {
         return ResponseEntity.ok(userService.loginPhoneCheckKey(id, phoneKey));
+    }
+
+    // 아아디 찾기 (이메일로)
+    @PostMapping("find/id/email")
+    public ResponseEntity<String> findIdEmail(@RequestParam String name, String email) {
+        return ResponseEntity.ok(userService.findIdEmail(name, email));
+    }
+
+    // 아이디 찾기 (전화번호로)
+    @PostMapping("find/id/phone")
+    public ResponseEntity<String> findIdPhone(@RequestParam String name, String phone) {
+        return ResponseEntity.ok(userService.findIdPhone(name, phone));
+    }
+
+    // 비밀번호 찾기 (이메일로)
+    @PostMapping("find/pw/email")
+    public ResponseEntity<String> findPwEmail(@RequestParam String id, String email) {
+        return ResponseEntity.ok(userService.findPwEmail(id, email));
+    }
+
+    // 비밀번호 찾기 (전화번호로)
+    @PostMapping("find/pw/phone")
+    public ResponseEntity<String> findPwPhone(@RequestParam String id, String phone) {
+        return ResponseEntity.ok(userService.findPwPhone(id, phone));
+    }
+
+    // 개인정보 수정
+    // 하기전에 /login을 통해 아이디와 비밀번호가 일치하는지 재확인
+    // User 개인정보를 확인하는 것은 클라이언트쪽에서 /login/userinfo를 통해 가능함
+    // 일치할 경우에만 개인정보 수정 가능하도록 하기
+    // id, pw, name, email, phone 모두 입력할 수 있도록 (단, email, phone 변경시 변경된 항목은 재인증 필요함)
+    @PostMapping("user/profile/update")
+    public ResponseEntity<String> updateUserProfile(@RequestBody User user) {
+        return ResponseEntity.ok(userService.updateUserProfile(user));
     }
 }

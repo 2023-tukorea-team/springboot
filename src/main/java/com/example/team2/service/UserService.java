@@ -14,7 +14,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -23,9 +22,9 @@ public class UserService {
 
     @Value("${coolsms.api.key}")
     private String apiKey;
-    @Value("{coolsms.api.secret}")
+    @Value("${coolsms.api.secret}")
     private String apiSecret;
-    @Value("coolsms.sendphonenum")
+    @Value("${coolsms.phone}")
     private String sendPhoneNum;
 
     private final UserRepository userRepository;
@@ -41,6 +40,14 @@ public class UserService {
 
     public boolean checkId(String id) {
         return userRepository.checkId(id);
+    }
+
+    public boolean checkEmail(String email) {
+        return userRepository.checkId(email);
+    }
+
+    public boolean checkPhone(String phone) {
+        return userRepository.checkId(phone);
     }
 
     public boolean registerUser(User user) {
@@ -132,6 +139,116 @@ public class UserService {
             return userRepository.loginPhoneCheckState(id);
         }
         return false;
+    }
+
+    public String findIdEmail(String name, String email) {
+        // 자격 확인 (이름과 이메일 일치하는지)
+        boolean state = userRepository.equalFindIdEmail(name, email);
+
+        if (state == true) {
+            // 아이디 조회 결과
+            String id = userRepository.findIdbyEmail(email);
+
+            // 이메일 전송
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(email);
+            message.setSubject("아이디 조회");
+            message.setText(id);
+            javaMailSender.send(message);
+
+            return email + "로 id를 전송했습니다.";
+        }
+        return "입력하신 정보가 올바르지 않습니다.";
+    }
+
+    public String findIdPhone(String name, String phone) {
+        // 자격 확인 (이름과 전화번호 일치하는지)
+        boolean state = userRepository.equalFindIdPhone(name, phone);
+
+        if (state == true) {
+            // 아이디 조회 결과
+            String id = userRepository.findIdbyPhone(phone);
+
+            // 문자 전송
+            Message message = new Message();
+            message.setFrom(sendPhoneNum);
+            message.setTo(phone);
+            message.setText(id);
+            SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
+            System.out.println(response);
+
+            return phone + "로 id를 전송했습니다.";
+        }
+        return "입력하신 정보가 올바르지 않습니다.";
+    }
+
+    public String findPwEmail(String id, String email) {
+        // 자격 확인 (id와 이메일 일치하는지)
+        boolean state = userRepository.equalFindPwEmail(id, email);
+
+        if (state == true) {
+            // 임시 비밀번호 생성
+            String tempPw = createCode();
+
+            // DB에 임시 비밀번호 저장
+            userRepository.saveTempPw(id, tempPw);
+
+            // 이메일 전송
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(email);
+            message.setSubject("임시 비밀번호");
+            message.setText(tempPw);
+            javaMailSender.send(message);
+
+            return email + "로 임시 비밀번호를 전송했습니다.";
+        }
+        return "입력하신 정보가 올바르지 않습니다.";
+    }
+
+    public String findPwPhone(String id, String phone) {
+        // 자격 확인 (id와 전화번호 일치하는지)
+        boolean state = userRepository.equalFindPwPhone(id, phone);
+
+        if (state == true) {
+            // 임시 비밀번호 생성
+            String tempPw = createCode();
+
+            // DB에 임시 비밀번호 저장
+            userRepository.saveTempPw(id, tempPw);
+
+            // 문자 전송
+            Message message = new Message();
+            message.setFrom(sendPhoneNum);
+            message.setTo(phone);
+            message.setText(tempPw);
+            SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
+            System.out.println(response);
+
+            return phone + "로 임시 비밀번호를 전송했습니다.";
+        }
+        return "입력하신 정보가 올바르지 않습니다.";
+    }
+
+    public String updateUserProfile(User user) {
+        // 이메일과 아이디를 가져옴
+        List<Object[]> checkUpdageList = userRepository.checkUpdateUserProfile(user.getId());
+        Object[] row = checkUpdageList.get(0);
+        String preEmail = (String) row[0];
+        String prePhone = (String) row[1];
+        Integer checkEmail = (Integer) row[2];
+        Integer checkPhone = (Integer) row[3];
+
+        String id = user.getId();
+
+        // 이메일 인증 했으나 변경됨 -> 이메일 재인증 (0)
+        if ((!preEmail.equals(user.getEmail())) && (checkEmail == 1) && !userRepository.updateCheckEmail0(id)) return "이메일 인증 상태 변경 실패";
+
+        // 문자 인증 했으나 변경됨 -> 문자 재인증 (0)
+        if ((!prePhone.equals(user.getPhone())) && (checkPhone == 1) && !userRepository.updateCheckPhone0(id)) return "문자 인증 상태 변경 실패";
+
+        // 회원 정보 수정
+        if (userRepository.updateUserProfile(user)) return "회원 정보 수정 성공";
+        return "회원 정보 수정 실패";
     }
 
     private String createCode() {

@@ -23,6 +23,22 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public boolean checkEmail(String email) {
+        Query query = entityManager.createQuery("SELECT COUNT(u) FROM User u WHERE u.email = :email");
+        query.setParameter("email", email);
+        Long count = (Long) query.getSingleResult();
+        return count > 0;
+    }
+
+    @Override
+    public boolean checkPhone(String phone) {
+        Query query = entityManager.createQuery("SELECT COUNT(u) FROM User u WHERE u.phone = :phone");
+        query.setParameter("phone", phone);
+        Long count = (Long) query.getSingleResult();
+        return count > 0;
+    }
+
+    @Override
     @Transactional
     public boolean registerUser(User user) {
         try {
@@ -131,6 +147,111 @@ public class UserRepositoryImpl implements UserRepository {
         String sql = "UPDATE User SET phonecheck = 1 WHERE id = :id";
         Query query = entityManager.createQuery(sql)
                 .setParameter("id", id);
+        return query.executeUpdate() > 0;
+    }
+
+    @Override
+    public boolean equalFindIdEmail(String name, String email) {
+        String sql = "SELECT COUNT(*) FROM User u WHERE u.name = :name AND u.email = :email";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("name",name)
+                .setParameter("email",email);
+        Long count = (Long) query.getSingleResult();
+        return count > 0;
+    }
+
+    @Override
+    public String findIdbyEmail(String email) {
+        String sql = "SELECT u.id FROM User u WHERE u.email = :email";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("email", email);
+        return (String) query.getSingleResult();
+    }
+
+    @Override
+    public boolean equalFindIdPhone(String name, String phone) {
+        String sql = "SELECT COUNT(*) FROM User u WHERE u.name = :name AND u.phone = :phone";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("name",name)
+                .setParameter("phone",phone);
+        Long count = (Long) query.getSingleResult();
+        return count > 0;
+    }
+
+    @Override
+    public String findIdbyPhone(String phone) {
+        String sql = "SELECT u.id FROM User u WHERE u.phone = :phone";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("phone", phone);
+        return (String) query.getSingleResult();
+    }
+
+    @Override
+    public boolean equalFindPwEmail(String id, String email) {
+        String sql = "SELECT COUNT(*) FROM User u WHERE u.id = :id AND u.email = :email";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("id",id)
+                .setParameter("email",email);
+        Long count = (Long) query.getSingleResult();
+        return count > 0;
+    }
+
+    @Override
+    public boolean equalFindPwPhone(String id, String phone) {
+        String sql = "SELECT COUNT(*) FROM User u WHERE u.id = :id AND u.phone = :phone";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("id",id)
+                .setParameter("phone",phone);
+        Long count = (Long) query.getSingleResult();
+        return count > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean saveTempPw(String id, String tempPw) {
+        String sql = "UPDATE User SET pw = :tempPw WHERE id = :id";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("id", id)
+                .setParameter("tempPw",tempPw);
+        return query.executeUpdate() > 0;
+    }
+
+    @Override
+    public List<?> checkUpdateUserProfile(String id) {
+        String sql = "SELECT u.email, u.phone, u.emailcheck, u.phonecheck FROM User u WHERE u.id = :id";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("id", id);
+        return query.getResultList();
+    }
+
+    @Override
+    @Transactional
+    public boolean updateCheckEmail0(String id) {
+        String sql = "UPDATE User SET emailcheck = 0 WHERE id = :id";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("id", id);
+        return query.executeUpdate() > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean updateCheckPhone0(String id) {
+        String sql = "UPDATE User SET phonecheck = 0 WHERE id = :id";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("id", id);
+        return query.executeUpdate() > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean updateUserProfile(User user) {
+        String sql = "UPDATE User u SET u.pw =:pw, u.name =:name, u.email =:email, u.phone =:phone WHERE id = :id";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("id", user.getId())
+                .setParameter("pw",user.getPw())
+                .setParameter("name",user.getName())
+                .setParameter("email",user.getEmail())
+                .setParameter("phone",user.getPhone());
         return query.executeUpdate() > 0;
     }
 }
