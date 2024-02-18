@@ -43,11 +43,11 @@ public class UserService {
     }
 
     public boolean checkEmail(String email) {
-        return userRepository.checkId(email);
+        return userRepository.checkEmail(email);
     }
 
     public boolean checkPhone(String phone) {
-        return userRepository.checkId(phone);
+        return userRepository.checkPhone(phone);
     }
 
     public boolean registerUser(User user) {

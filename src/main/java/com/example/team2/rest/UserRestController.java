@@ -24,12 +24,12 @@ public class UserRestController {
 
     @PostMapping("/signup/checkemail")
     public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
-        return ResponseEntity.ok(userService.checkId(email));
+        return ResponseEntity.ok(userService.checkEmail(email));
     }
 
     @PostMapping("/signup/checkphone")
     public ResponseEntity<Boolean> checkPhone(@RequestParam String phone) {
-        return ResponseEntity.ok(userService.checkId(phone));
+        return ResponseEntity.ok(userService.checkPhone(phone));
     }
 
     // id, pw, name, email, phone -> bool (true: 생성완료)
