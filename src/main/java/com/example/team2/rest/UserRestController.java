@@ -16,19 +16,27 @@ public class UserRestController {
         this.userService = userService;
     }
 
+    @GetMapping("/")
+    public String serverStart() {
+        return "서버 작동중입니다.";
+    }
+
     // id -> bool (true: 중복있음, false: 중복없음)
     @PostMapping("/signup/checkid")
-    public ResponseEntity<Boolean> checkId(@RequestParam String id) {
+    public ResponseEntity<Boolean> checkId(@RequestBody User user) {
+        String id = user.getId();
         return ResponseEntity.ok(userService.checkId(id));
     }
 
     @PostMapping("/signup/checkemail")
-    public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+    public ResponseEntity<Boolean> checkEmail(@RequestBody User user) {
+        String email = user.getEmail();
         return ResponseEntity.ok(userService.checkEmail(email));
     }
 
     @PostMapping("/signup/checkphone")
-    public ResponseEntity<Boolean> checkPhone(@RequestParam String phone) {
+    public ResponseEntity<Boolean> checkPhone(@RequestBody User user) {
+        String phone = user.getPhone();
         return ResponseEntity.ok(userService.checkPhone(phone));
     }
 
@@ -46,7 +54,8 @@ public class UserRestController {
 
     // id -> User(id, name, email, phone)
     @PostMapping("/login/userinfo")
-    public ResponseEntity<User> loginUserInfo(@RequestParam String id) {
+    public ResponseEntity<User> loginUserInfo(@RequestBody User user) {
+        String id = user.getId();
         return ResponseEntity.ok(userService.loginUserInfo(id));
     }
 
@@ -54,52 +63,66 @@ public class UserRestController {
     // 유저의 아이디를 토대로 이메일을 찾아서 이메일 전송
     // id -> String
     @PostMapping("/login/emailcheck")
-    public ResponseEntity<String> loginEmailCheck(@RequestParam String id) {
+    public ResponseEntity<String> loginEmailCheck(@RequestBody User user) {
+        String id = user.getId();
         return ResponseEntity.ok(userService.loginEmailCheck(id));
     }
 
     // DB안의 코드와 이메일에 전송된 코드가 일치하면 이메일 인증 성공
     // id, emailkey -> bool
     @PostMapping("/login/emailcheck/client")
-    public ResponseEntity<Boolean> loginEmailCheckKey(@RequestParam String id, String emailKey) {
-        return ResponseEntity.ok(userService.loginEmailCheckKey(id, emailKey));
+    public ResponseEntity<Boolean> loginEmailCheckKey(@RequestBody User user) {
+        String id = user.getId();
+        String emailkey = user.getEmailkey();
+        return ResponseEntity.ok(userService.loginEmailCheckKey(id, emailkey));
     }
 
     // 문자 발송
     // id -> String
     @PostMapping("/login/phonecheck")
-    public ResponseEntity<String> loginPhoneCheck(@RequestParam String id) {
+    public ResponseEntity<String> loginPhoneCheck(@RequestBody User user) {
+        String id = user.getId();
         return ResponseEntity.ok(userService.loginPhoneCheck(id));
     }
 
     // DB안의 코드와 문자에 전송된 코드가 일치하면 문자 인증 성공
     // id, emailkey -> bool
     @PostMapping("/login/phonecheck/client")
-    public ResponseEntity<Boolean> loginPhoneCheckKey(@RequestParam String id, String phoneKey) {
-        return ResponseEntity.ok(userService.loginPhoneCheckKey(id, phoneKey));
+    public ResponseEntity<Boolean> loginPhoneCheckKey(@RequestBody User user) {
+        String id = user.getId();
+        String phonekey = user.getPhonekey();
+        return ResponseEntity.ok(userService.loginPhoneCheckKey(id, phonekey));
     }
 
     // 아아디 찾기 (이메일로)
     @PostMapping("find/id/email")
-    public ResponseEntity<String> findIdEmail(@RequestParam String name, String email) {
+    public ResponseEntity<String> findIdEmail(@RequestBody User user) {
+        String name = user.getName();
+        String email = user.getEmail();
         return ResponseEntity.ok(userService.findIdEmail(name, email));
     }
 
     // 아이디 찾기 (전화번호로)
     @PostMapping("find/id/phone")
-    public ResponseEntity<String> findIdPhone(@RequestParam String name, String phone) {
+    public ResponseEntity<String> findIdPhone(@RequestBody User user) {
+        String name = user.getName();
+        String phone = user.getPhone();
         return ResponseEntity.ok(userService.findIdPhone(name, phone));
     }
 
     // 비밀번호 찾기 (이메일로)
     @PostMapping("find/pw/email")
-    public ResponseEntity<String> findPwEmail(@RequestParam String id, String email) {
+    public ResponseEntity<String> findPwEmail(@RequestBody User user) {
+        String id = user.getId();
+        String email = user.getEmail();
         return ResponseEntity.ok(userService.findPwEmail(id, email));
     }
 
     // 비밀번호 찾기 (전화번호로)
     @PostMapping("find/pw/phone")
-    public ResponseEntity<String> findPwPhone(@RequestParam String id, String phone) {
+    public ResponseEntity<String> findPwPhone(@RequestBody User user) {
+        String id = user.getId();
+        String phone = user.getPhone();
         return ResponseEntity.ok(userService.findPwPhone(id, phone));
     }
 
