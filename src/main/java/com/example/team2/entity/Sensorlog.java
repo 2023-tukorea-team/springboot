@@ -18,13 +18,19 @@ public class Sensorlog {
     private Integer sid;
 
     private String id;
-    private String logoption;
+    private Integer start;
+    private Integer door;
+    private Integer person;
+    private Integer speed;
     private LocalDateTime logtime;
 
     public Sensorlog() {}
 
-    public Sensorlog(String id, String logoption) {
+    public Sensorlog(String id, Integer start, Integer door, Integer person, Integer speed) {
         this.id = id;
-        this.logoption = logoption;
+        this.start = start;
+        this.door = door;
+        this.person = person;
+        this.speed = speed;
     }
 }

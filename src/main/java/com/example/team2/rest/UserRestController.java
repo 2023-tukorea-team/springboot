@@ -1,10 +1,13 @@
 package com.example.team2.rest;
 
+import com.example.team2.entity.Sensorlog;
 import com.example.team2.entity.User;
 import com.example.team2.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 public class UserRestController {
@@ -95,7 +98,7 @@ public class UserRestController {
     }
 
     // 아아디 찾기 (이메일로)
-    @PostMapping("find/id/email")
+    @PostMapping("/find/id/email")
     public ResponseEntity<String> findIdEmail(@RequestBody User user) {
         String name = user.getName();
         String email = user.getEmail();
@@ -103,7 +106,7 @@ public class UserRestController {
     }
 
     // 아이디 찾기 (전화번호로)
-    @PostMapping("find/id/phone")
+    @PostMapping("/find/id/phone")
     public ResponseEntity<String> findIdPhone(@RequestBody User user) {
         String name = user.getName();
         String phone = user.getPhone();
@@ -111,7 +114,7 @@ public class UserRestController {
     }
 
     // 비밀번호 찾기 (이메일로)
-    @PostMapping("find/pw/email")
+    @PostMapping("/find/pw/email")
     public ResponseEntity<String> findPwEmail(@RequestBody User user) {
         String id = user.getId();
         String email = user.getEmail();
@@ -119,7 +122,7 @@ public class UserRestController {
     }
 
     // 비밀번호 찾기 (전화번호로)
-    @PostMapping("find/pw/phone")
+    @PostMapping("/find/pw/phone")
     public ResponseEntity<String> findPwPhone(@RequestBody User user) {
         String id = user.getId();
         String phone = user.getPhone();
@@ -131,7 +134,7 @@ public class UserRestController {
     // User 개인정보를 확인하는 것은 클라이언트쪽에서 /login/userinfo를 통해 가능함
     // 일치할 경우에만 개인정보 수정 가능하도록 하기
     // id, pw, name, email, phone 모두 입력할 수 있도록 (단, email, phone 변경시 변경된 항목은 재인증 필요함)
-    @PostMapping("user/profile/update")
+    @PostMapping("/user/profile/update")
     public ResponseEntity<String> updateUserProfile(@RequestBody User user) {
         return ResponseEntity.ok(userService.updateUserProfile(user));
     }

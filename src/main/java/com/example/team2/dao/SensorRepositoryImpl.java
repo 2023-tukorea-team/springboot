@@ -2,6 +2,7 @@ package com.example.team2.dao;
 
 import com.example.team2.entity.Sensor;
 import com.example.team2.entity.Sensorlog;
+import com.example.team2.entity.Usersensor;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 public class SensorRepositoryImpl implements SensorRepository {
@@ -38,7 +40,16 @@ public class SensorRepositoryImpl implements SensorRepository {
 
     @Override
     @Transactional
-    public boolean AddDetectLog(Sensorlog sensorlog) {
+    public boolean updateTime(Sensor sensor) {
+        String sql = "UPDATE Sensor SET logtime = current_timestamp WHERE id = :id";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("id",sensor.getId());
+        return query.executeUpdate() > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean AddLog(Sensorlog sensorlog) {
         try {
             entityManager.persist(sensorlog);
             return true;
@@ -46,5 +57,75 @@ public class SensorRepositoryImpl implements SensorRepository {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public List<Sensor> searchSensorList() {
+        LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(5);
+        String sql = "SELECT s FROM Sensor s WHERE s.logtime >= :fiveMinutesAgo";
+        Query query = entityManager.createQuery(sql);
+        query.setParameter("fiveMinutesAgo", fiveMinutesAgo);
+        return query.getResultList();
+    }
+
+    @Override
+    @Transactional
+    public boolean addUserSensor(Usersensor userSensor) {
+        try {
+            entityManager.persist(userSensor);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean checkUserSensor(Usersensor userSensor) {
+        Query query = entityManager.createQuery("SELECT COUNT(u) FROM Usersensor u WHERE u.userid = :userid and u.sensorid =:sensorid");
+        query.setParameter("userid", userSensor.getUserid());
+        query.setParameter("sensorid",userSensor.getSensorid());
+        Long count = (Long) query.getSingleResult();
+        return count > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean updateUserSensor(Usersensor userSensor) {
+        String sql = "UPDATE Usersensor u SET u.code = :code WHERE u.userid = :userid and u.sensorid = :sensorid";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("code",userSensor.getCode())
+                .setParameter("userid",userSensor.getUserid())
+                .setParameter("sensorid",userSensor.getSensorid());
+        return query.executeUpdate() > 0;
+    }
+
+    @Override
+    public boolean checkCode(Usersensor userSensor) {
+        Query query = entityManager.createQuery("SELECT COUNT(u) FROM Usersensor u WHERE u.userid = :userid and u.sensorid =:sensorid and u.code =:code");
+        query.setParameter("userid", userSensor.getUserid());
+        query.setParameter("sensorid",userSensor.getSensorid());
+        query.setParameter("code",userSensor.getCode());
+        Long count = (Long) query.getSingleResult();
+        return count > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean updateCheckCode(Usersensor userSensor) {
+        String sql = "UPDATE Usersensor u SET u.codecheck = 1, u.direct = 1 WHERE u.userid = :userid and u.sensorid = :sensorid and u.code =:code";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("code",userSensor.getCode())
+                .setParameter("userid",userSensor.getUserid())
+                .setParameter("sensorid",userSensor.getSensorid());
+        return query.executeUpdate() > 0;
+    }
+
+    @Override
+    public List<Sensorlog> sensorLog(Sensorlog sensorlog) {
+        String sql = "SELECT s FROM Sensorlog s WHERE s.id = :id ORDER BY s.sid DESC" ;
+        Query query = entityManager.createQuery(sql)
+                .setParameter("id",sensorlog.getId());
+        return query.getResultList();
     }
 }
