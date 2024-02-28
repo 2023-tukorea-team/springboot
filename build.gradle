@@ -9,6 +9,7 @@ group = 'com.example'
 version = '0.0.5-SNAPSHOT'
 
 java {
+    sourceCompatibility = '17'
 }
 
 configurations {

@@ -9,6 +9,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -22,6 +23,9 @@ import java.util.Random;
 public class SensorService {
 
     private final SensorRepository sensorRepository;
+
+    @Value("${broker.address}")
+    private String broker;
 
     @Autowired
     public SensorService(SensorRepository sensorRepository) {
@@ -129,11 +133,8 @@ public class SensorService {
     }
 
     private void sendMessage(String topic, String id, Object data) {
-        String broker = "tcp://15.164.151.155:1883";
-        String clientId = "";
-
         try {
-            MqttClient mqttClient = new MqttClient(broker, clientId);
+            MqttClient mqttClient = new MqttClient(broker, id);
             MqttConnectOptions connOpts = new MqttConnectOptions();
             connOpts.setCleanSession(true);
             mqttClient.connect(connOpts);
