@@ -9,12 +9,15 @@ import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -38,60 +41,120 @@ public class UserService {
         this.messageService = NurigoApp.INSTANCE.initialize(apiKey, apiSecret, "https://api.coolsms.co.kr");
     }
 
-    public boolean checkId(String id) {
-        return userRepository.checkId(id);
+    public Map<String, Object> checkId(User user) {
+        String id = user.getId();
+        boolean result = userRepository.checkId(id);
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("result", result);
+        if (result) {
+            responseBody.put("description", "중복된 아이디입니다.");
+        } else {
+            responseBody.put("description", "사용가능한 아이디입니다.");
+        }
+        return responseBody;
     }
 
-    public boolean checkEmail(String email) {
-        return userRepository.checkEmail(email);
+    public Map<String, Object> checkEmail(User user) {
+        String email = user.getEmail();
+        boolean result = userRepository.checkId(email);
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("result", result);
+        if (result) {
+            responseBody.put("description", "중복된 이메일입니다.");
+        } else {
+            responseBody.put("description", "사용가능한 이메일입니다.");
+        }
+        return responseBody;
     }
 
-    public boolean checkPhone(String phone) {
-        return userRepository.checkPhone(phone);
+    public Map<String, Object> checkPhone(User user) {
+        String phone = user.getPhone();
+        boolean result = userRepository.checkId(phone);
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("result", result);
+        if (result) {
+            responseBody.put("description", "중복된 전화번호입니다.");
+        } else {
+            responseBody.put("description", "사용가능한 전화번호입니다.");
+        }
+        return responseBody;
     }
 
-    public boolean registerUser(User user) {
-        return userRepository.registerUser(user);
+    public Map<String, Object> registerUser(User user) {
+        boolean result = userRepository.registerUser(user);
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("result", result);
+        if (result) {
+            responseBody.put("description", "유저정보 등록에 성공하였습니다.");
+        } else {
+            responseBody.put("description", "유저정보 등록에 실패하였습니다.");
+        }
+        return responseBody;
     }
 
-    public String loginUser(User user) {
+    public Map<String, Object> loginUser(User user) {
+        Map<String, Object> responseBody = new HashMap<>();
+
         // 아이디와 비밀번호가 일치하여 로그인 완료 (true)
         boolean state = userRepository.loginUser(user);
-        if (state == true) {
-
+        if (state) {
             // 이메일 휴대폰 인증 되었는지 확인
             List<Object[]> checkLoginList = userRepository.checkLogin(user.getId());
             Object[] row = checkLoginList.get(0);
             Integer emailCheck = (Integer) row[0];
             Integer phoneCheck = (Integer) row[1];
 
+            responseBody.put("check", true);
+            responseBody.put("emailcheck", emailCheck);
+            responseBody.put("phonecheck", phoneCheck);
+
             if ((emailCheck == 1) && (phoneCheck == 1)) {
-                return "로그인 성공";
+                responseBody.put("emailcheck", true);
+                responseBody.put("phonecheck", true);
+                responseBody.put("description", "로그인에 성공했습니다.");
             } else if ((emailCheck == 1) && (phoneCheck == 0)) {
-                return "휴대폰 인증이 필요합니다.";
+                responseBody.put("emailcheck", true);
+                responseBody.put("phonecheck", false);
+                responseBody.put("description", "휴대폰 인증이 필요합니다.");
             } else if ((emailCheck == 0) && (phoneCheck == 1)) {
-                return "이메일 인증이 필요합니다.";
+                responseBody.put("emailcheck", false);
+                responseBody.put("phonecheck", true);
+                responseBody.put("description", "이메일 인증이 필요합니다.");
             } else {
-                return "이메일 인증과 휴대폰 인증이 필요합니다.";
+                responseBody.put("emailcheck", false);
+                responseBody.put("phonecheck", false);
+                responseBody.put("description", "이메일 인증과 휴대폰 인증이 필요합니다.");
             }
         } else {
-            return "아이디와 비밀번호가 일치하지 않습니다.";
+            responseBody.put("check", false);
+            responseBody.put("emailcheck", false);
+            responseBody.put("phonecheck", false);
+            responseBody.put("description", "아이디와 비밀번호가 일치하지 않습니다.");
         }
+        return responseBody;
     }
 
-    public User loginUserInfo(String id) {
-        return userRepository.loginUserInfo(id);
+    public User loginUserInfo(User user) {
+        return userRepository.loginUserInfo(user.getId());
     }
 
-    public String loginEmailCheck(String id) {
+    public Map<String, Object> loginEmailCheck(User user) {
+        String id = user.getId();
+        Map<String, Object> responseBody = new HashMap<>();
+
         // 인증코드 생성
         String code = createCode();
 
         // 생성한 것 DB에 넣기
-        userRepository.loginEmailCheckCode(id, code);
+        responseBody.put("result", userRepository.loginEmailCheckCode(id, code));
 
         // 보낼 이메일 주소 찾기
         String sendEmail = userRepository.findSendEmail(id);
+        responseBody.put("email", sendEmail);
 
         // 생성한 것으로 메일 보내기
         SimpleMailMessage message = new SimpleMailMessage();
@@ -100,27 +163,46 @@ public class UserService {
         message.setText(code);
         javaMailSender.send(message);
 
-        return sendEmail + "로 코드를 전송했습니다.";
+        return responseBody;
     }
 
-    public boolean loginEmailCheckKey(String id, String emailKey) {
+    public Map<String, Object> loginEmailCheckKey(User user) {
+        String id = user.getId();
+        String emailKey = user.getEmailkey();
+        Map<String, Object> responseBody = new HashMap<>();
+
         boolean result = userRepository.loginEmailCheckKey(id, emailKey);
+        responseBody.put("result", result);
+
         // 이메일 인증 성공 시 상태 변환
-        if (result == true) {
-            return userRepository.loginEmailCheckState(id);
+        if (result) {
+            boolean change = userRepository.loginEmailCheckState(id);
+            responseBody.put("change", change);
+            if (change) {
+                responseBody.put("description", "이메일 인증에 성공했습니다.");
+            } else {
+                responseBody.put("description", "이메일 인증에 성공했으나 오류가 발생하였습니다.");
+            }
+        } else {
+            responseBody.put("change", false);
+            responseBody.put("description", "이메일 인증에 실패했습니다.");
         }
-        return false;
+        return responseBody;
     }
 
-    public String loginPhoneCheck(String id) {
+    public Map<String, Object> loginPhoneCheck(User user) {
+        String id = user.getId();
+        Map<String, Object> responseBody = new HashMap<>();
+
         // 인증코드 생성
         String code = createCode();
 
         // 생성한 것 DB에 넣기
-        userRepository.loginPhoneCheckCode(id, code);
+        responseBody.put("result", userRepository.loginPhoneCheckCode(id, code));
 
         // 보낼 문자 주소 찾기
         String sendPhone = userRepository.findSendPhone(id);
+        responseBody.put("phone", sendPhone);
 
         // 문자 보내기
         Message message = new Message();
@@ -129,23 +211,43 @@ public class UserService {
         message.setText(code);
         SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
         System.out.println(response);
-        return sendPhone + "로 코드를 전송했습니다.";
+        return responseBody;
     }
 
-    public boolean loginPhoneCheckKey(String id, String PhoneKey) {
-        boolean result = userRepository.loginPhoneCheckKey(id, PhoneKey);
+    public Map<String, Object> loginPhoneCheckKey(User user) {
+        String id = user.getId();
+        String phoneKey = user.getPhonekey();
+        Map<String, Object> responseBody = new HashMap<>();
+
+        boolean result = userRepository.loginPhoneCheckKey(id, phoneKey);
+        responseBody.put("result", result);
+
         // 문자 인증 성공 시 상태 변환
-        if (result == true) {
-            return userRepository.loginPhoneCheckState(id);
+        if (result) {
+            boolean change = userRepository.loginPhoneCheckState(id);
+            responseBody.put("change", change);
+            if (change) {
+                responseBody.put("description", "문자 인증에 성공했습니다.");
+            } else {
+                responseBody.put("description", "문자 인증에 성공했으나 오류가 발생하였습니다.");
+            }
+        } else {
+            responseBody.put("change", false);
+            responseBody.put("description", "문자 인증에 실패했습니다.");
         }
-        return false;
+        return responseBody;
     }
 
-    public String findIdEmail(String name, String email) {
-        // 자격 확인 (이름과 이메일 일치하는지)
-        boolean state = userRepository.equalFindIdEmail(name, email);
+    public Map<String, Object> findIdEmail(User user) {
+        String name = user.getName();
+        String email = user.getEmail();
+        Map<String, Object> responseBody = new HashMap<>();
 
-        if (state == true) {
+        // 자격 확인 (이름과 이메일 일치하는지)
+        boolean result = userRepository.equalFindIdEmail(name, email);
+        responseBody.put("result", result);
+
+        if (result) {
             // 아이디 조회 결과
             String id = userRepository.findIdbyEmail(email);
 
@@ -155,17 +257,23 @@ public class UserService {
             message.setSubject("아이디 조회");
             message.setText(id);
             javaMailSender.send(message);
-
-            return email + "로 id를 전송했습니다.";
+            responseBody.put("id", id);
+        } else {
+            responseBody.put("description", "입력하신 정보가 올바르지 않습니다.");
         }
-        return "입력하신 정보가 올바르지 않습니다.";
+        return responseBody;
     }
 
-    public String findIdPhone(String name, String phone) {
-        // 자격 확인 (이름과 전화번호 일치하는지)
-        boolean state = userRepository.equalFindIdPhone(name, phone);
+    public Map<String, Object> findIdPhone(User user) {
+        String name = user.getName();
+        String phone = user.getPhone();
+        Map<String, Object> responseBody = new HashMap<>();
 
-        if (state == true) {
+        // 자격 확인 (이름과 전화번호 일치하는지)
+        boolean result = userRepository.equalFindIdPhone(name, phone);
+        responseBody.put("result", result);
+
+        if (result) {
             // 아이디 조회 결과
             String id = userRepository.findIdbyPhone(phone);
 
@@ -176,17 +284,23 @@ public class UserService {
             message.setText(id);
             SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
             System.out.println(response);
-
-            return phone + "로 id를 전송했습니다.";
+            responseBody.put("id", id);
+        } else {
+            responseBody.put("description", "입력하신 정보가 올바르지 않습니다.");
         }
-        return "입력하신 정보가 올바르지 않습니다.";
+        return responseBody;
     }
 
-    public String findPwEmail(String id, String email) {
-        // 자격 확인 (id와 이메일 일치하는지)
-        boolean state = userRepository.equalFindPwEmail(id, email);
+    public Map<String, Object> findPwEmail(User user) {
+        String id = user.getId();
+        String email = user.getEmail();
+        Map<String, Object> responseBody = new HashMap<>();
 
-        if (state == true) {
+        // 자격 확인 (id와 이메일 일치하는지)
+        boolean result = userRepository.equalFindPwEmail(id, email);
+        responseBody.put("result", result);
+
+        if (result) {
             // 임시 비밀번호 생성
             String tempPw = createCode();
 
@@ -199,17 +313,23 @@ public class UserService {
             message.setSubject("임시 비밀번호");
             message.setText(tempPw);
             javaMailSender.send(message);
-
-            return email + "로 임시 비밀번호를 전송했습니다.";
+            responseBody.put("description", "임시 비밀번호를 전송했습니다.");
+        } else {
+            responseBody.put("description", "입력하신 정보가 올바르지 않습니다.");
         }
-        return "입력하신 정보가 올바르지 않습니다.";
+        return responseBody;
     }
 
-    public String findPwPhone(String id, String phone) {
-        // 자격 확인 (id와 전화번호 일치하는지)
-        boolean state = userRepository.equalFindPwPhone(id, phone);
+    public Map<String, Object> findPwPhone(User user) {
+        String id = user.getId();
+        String phone = user.getPhone();
+        Map<String, Object> responseBody = new HashMap<>();
 
-        if (state == true) {
+        // 자격 확인 (id와 전화번호 일치하는지)
+        boolean result = userRepository.equalFindPwPhone(id, phone);
+        responseBody.put("result", result);
+
+        if (result) {
             // 임시 비밀번호 생성
             String tempPw = createCode();
 
@@ -223,13 +343,16 @@ public class UserService {
             message.setText(tempPw);
             SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
             System.out.println(response);
-
-            return phone + "로 임시 비밀번호를 전송했습니다.";
+            responseBody.put("description", "임시 비밀번호를 전송했습니다.");
+        } else {
+            responseBody.put("description", "입력하신 정보가 올바르지 않습니다.");
         }
-        return "입력하신 정보가 올바르지 않습니다.";
+        return responseBody;
     }
 
-    public String updateUserProfile(User user) {
+    public Map<String, Object> updateUserProfile(User user) {
+        Map<String, Object> responseBody = new HashMap<>();
+
         // 이메일과 아이디를 가져옴
         List<Object[]> checkUpdageList = userRepository.checkUpdateUserProfile(user.getId());
         Object[] row = checkUpdageList.get(0);
@@ -241,14 +364,31 @@ public class UserService {
         String id = user.getId();
 
         // 이메일 인증 했으나 변경됨 -> 이메일 재인증 (0)
-        if ((!preEmail.equals(user.getEmail())) && (checkEmail == 1) && !userRepository.updateCheckEmail0(id)) return "이메일 인증 상태 변경 실패";
+        if ((!preEmail.equals(user.getEmail())) && (checkEmail == 1) && userRepository.updateCheckEmail0(id)) {
+            responseBody.put("email", true);
+        } else {
+            // 이메일 인증 상태 변경 실패
+            responseBody.put("email", false);
+        }
 
         // 문자 인증 했으나 변경됨 -> 문자 재인증 (0)
-        if ((!prePhone.equals(user.getPhone())) && (checkPhone == 1) && !userRepository.updateCheckPhone0(id)) return "문자 인증 상태 변경 실패";
+        if ((!prePhone.equals(user.getPhone())) && (checkPhone == 1) && userRepository.updateCheckPhone0(id)) {
+            responseBody.put("phone", true);
+        } else {
+            // 문자 인증 상태 변경 실패
+            responseBody.put("phone", false);
+        }
+
+        boolean result = userRepository.updateUserProfile(user);
+        responseBody.put("result", result);
 
         // 회원 정보 수정
-        if (userRepository.updateUserProfile(user)) return "회원 정보 수정 성공";
-        return "회원 정보 수정 실패";
+        if (result) {
+            responseBody.put("description", "회원 정보 수정 성공");
+        } else {
+            responseBody.put("description", "회원 정보 수정 실패");
+        }
+        return responseBody;
     }
 
     private String createCode() {
