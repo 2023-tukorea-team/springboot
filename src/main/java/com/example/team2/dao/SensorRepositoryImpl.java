@@ -92,7 +92,7 @@ public class SensorRepositoryImpl implements SensorRepository {
     @Override
     @Transactional
     public boolean updateUserSensor(Usersensor userSensor) {
-        String sql = "UPDATE Usersensor u SET u.code = :code WHERE u.userid = :userid and u.sensorid = :sensorid";
+        String sql = "UPDATE Usersensor u SET u.code = :code, u.codetime = current_timestamp WHERE u.userid = :userid and u.sensorid = :sensorid";
         Query query = entityManager.createQuery(sql)
                 .setParameter("code",userSensor.getCode())
                 .setParameter("userid",userSensor.getUserid())
@@ -127,5 +127,16 @@ public class SensorRepositoryImpl implements SensorRepository {
         Query query = entityManager.createQuery(sql)
                 .setParameter("id",sensorlog.getId());
         return query.getResultList();
+    }
+
+    @Override
+    public boolean checkCodeTime(Usersensor userSensor) {
+        LocalDateTime threeMinutesAgo = LocalDateTime.now().minusMinutes(3);
+        Query query = entityManager.createQuery("SELECT COUNT(u) FROM Usersensor u WHERE u.userid = :userid and u.sensorid =:sensorid and u.codetime >= :threeMinutesAgo");
+        query.setParameter("userid", userSensor.getUserid());
+        query.setParameter("sensorid",userSensor.getSensorid());
+        query.setParameter("threeMinutesAgo",threeMinutesAgo);
+        Long count = (Long) query.getSingleResult();
+        return count > 0;
     }
 }

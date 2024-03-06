@@ -31,31 +31,35 @@ public class SensorRestController {
     }
 
     // 서버로 로그 전송
+    // id, start(int), door(int), person(int), spped(int)
     @PostMapping("/sensor/log")
     public ResponseEntity<Map<String, Object>> addLog(@RequestBody Sensorlog sensorlog) {
         return ResponseEntity.ok(sensorService.addLog(sensorlog));
     }
 
     // 사용자가 단말기 검색하기 (서버와 연결한지 5분 이내의 것만 검색하도록)
+    // 입력값 없음
     @PostMapping("/sensor/list")
-    public ResponseEntity<List<Sensor>> searchSensorList(@RequestBody Sensor sensor) {
+    public ResponseEntity<List<Sensor>> searchSensorList() {
         return ResponseEntity.ok(sensorService.searchSensorList());
     }
 
     // 사용자가 단말기를 선택
-    // 사용자 id와 단말기 번호 입력하면 결과 통보
+    // userid, sensorid
     @PostMapping("/sensor/select")
     public ResponseEntity<Map<String, Object>> selectSensor(@RequestBody Usersensor userSensor) {
         return ResponseEntity.ok(sensorService.selectSensor(userSensor));
     }
 
-    // 사용자 id, 단말기 번호, 코드 입력하면 결과 통보
+    // 코드 확인
+    // userid, sensorid, code
     @PostMapping("/sensor/checkcode")
     public ResponseEntity<Map<String, Object>> checkCode(@RequestBody Usersensor userSensor) {
         return ResponseEntity.ok(sensorService.checkCode(userSensor));
     }
 
     // 모바일 앱에서 요청 -> 단말에게 로그 전달해 달라고 하기
+    // id (센서id)
     @PostMapping("/sensor/logrequest")
     public ResponseEntity<List<Sensorlog>> requestLog(@RequestBody Sensorlog sensorlog) {
         return ResponseEntity.ok(sensorService.requestLog(sensorlog));

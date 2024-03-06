@@ -17,10 +17,12 @@ public interface UserRepository {
     boolean loginEmailCheckCode(String id, String code);
     String findSendEmail(String id);
     boolean loginEmailCheckKey(String id, String emailKey);
+    boolean loginEmailCheckTime(String id);
     boolean loginEmailCheckState(String id);
     boolean loginPhoneCheckCode(String id, String code);
     String findSendPhone(String id);
     boolean loginPhoneCheckKey(String id, String phoneKey);
+    boolean loginPhoneCheckTime(String id);
     boolean loginPhoneCheckState(String id);
     boolean equalFindIdEmail(String name, String email);
     String findIdbyEmail(String email);

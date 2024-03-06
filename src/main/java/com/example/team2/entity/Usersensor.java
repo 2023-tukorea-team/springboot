@@ -7,6 +7,8 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Entity
@@ -20,6 +22,7 @@ public class Usersensor {
     private String code;
     private Integer codecheck;
     private Integer direct;
+    private LocalDateTime codetime;
 
     public Usersensor() {}
 

@@ -7,6 +7,7 @@ import jakarta.persistence.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -79,7 +80,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     @Transactional
     public boolean loginEmailCheckCode(String id, String code) {
-        String sql = "UPDATE User SET emailkey = :code WHERE id = :id";
+        String sql = "UPDATE User u SET u.emailkey = :code, u.emailtime = current_timestamp WHERE u.id = :id";
         Query query = entityManager.createQuery(sql)
                 .setParameter("id", id)
                 .setParameter("code", code);
@@ -105,6 +106,16 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public boolean loginEmailCheckTime(String id) {
+        LocalDateTime threeMinutesAgo = LocalDateTime.now().minusMinutes(3);
+        Query query = entityManager.createQuery("SELECT COUNT(u) FROM User u WHERE u.id = :id AND u.emailtime >= :threeMinutesAgo");
+        query.setParameter("id",id);
+        query.setParameter("threeMinutesAgo",threeMinutesAgo);
+        Long count = (Long) query.getSingleResult();
+        return count > 0;
+    }
+
+    @Override
     @Transactional
     public boolean loginEmailCheckState(String id) {
         String sql = "UPDATE User SET emailcheck = 1 WHERE id = :id";
@@ -116,7 +127,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     @Transactional
     public boolean loginPhoneCheckCode(String id, String code) {
-        String sql = "UPDATE User SET phonekey = :code WHERE id = :id";
+        String sql = "UPDATE User u SET u.phonekey = :code, u.phonetime = current_timestamp WHERE u.id = :id";
         Query query = entityManager.createQuery(sql)
                 .setParameter("id", id)
                 .setParameter("code", code);
@@ -137,6 +148,16 @@ public class UserRepositoryImpl implements UserRepository {
         Query query = entityManager.createQuery(sql)
                 .setParameter("id",id)
                 .setParameter("phoneKey",phoneKey);
+        Long count = (Long) query.getSingleResult();
+        return count > 0;
+    }
+
+    @Override
+    public boolean loginPhoneCheckTime(String id) {
+        LocalDateTime threeMinutesAgo = LocalDateTime.now().minusMinutes(3);
+        Query query = entityManager.createQuery("SELECT COUNT(u) FROM User u WHERE u.id = :id AND u.phonetime >= :threeMinutesAgo");
+        query.setParameter("id",id);
+        query.setParameter("threeMinutesAgo",threeMinutesAgo);
         Long count = (Long) query.getSingleResult();
         return count > 0;
     }

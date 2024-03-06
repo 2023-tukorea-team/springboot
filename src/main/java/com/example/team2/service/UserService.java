@@ -57,7 +57,7 @@ public class UserService {
 
     public Map<String, Object> checkEmail(User user) {
         String email = user.getEmail();
-        boolean result = userRepository.checkId(email);
+        boolean result = userRepository.checkEmail(email);
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("result", result);
@@ -71,7 +71,7 @@ public class UserService {
 
     public Map<String, Object> checkPhone(User user) {
         String phone = user.getPhone();
-        boolean result = userRepository.checkId(phone);
+        boolean result = userRepository.checkPhone(phone);
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("result", result);
@@ -171,21 +171,35 @@ public class UserService {
         String emailKey = user.getEmailkey();
         Map<String, Object> responseBody = new HashMap<>();
 
-        boolean result = userRepository.loginEmailCheckKey(id, emailKey);
-        responseBody.put("result", result);
+        // 이메일 인증 여부
+        boolean codeCheck = userRepository.loginEmailCheckKey(id, emailKey);
+        responseBody.put("code", codeCheck);
 
-        // 이메일 인증 성공 시 상태 변환
-        if (result) {
-            boolean change = userRepository.loginEmailCheckState(id);
-            responseBody.put("change", change);
-            if (change) {
-                responseBody.put("description", "이메일 인증에 성공했습니다.");
+        // 제한 시간 내 인증 여부
+        boolean timeCheck = userRepository.loginEmailCheckTime(id);
+        responseBody.put("time", timeCheck);
+
+        if (codeCheck) {
+            if (timeCheck) {
+                boolean result = userRepository.loginEmailCheckState(id);
+                responseBody.put("result", result);
+                if (result) {
+                    responseBody.put("description", "코드 인증 성공");
+                } else {
+                    responseBody.put("description", "코드 인증 성공하였으나 오류 발생으로 서버에 반영되지 않음");
+                }
             } else {
-                responseBody.put("description", "이메일 인증에 성공했으나 오류가 발생하였습니다.");
+                responseBody.put("result", false);
+                responseBody.put("description", "코드는 맞으나 시간이 만료됨");
             }
         } else {
-            responseBody.put("change", false);
-            responseBody.put("description", "이메일 인증에 실패했습니다.");
+            if (timeCheck) {
+                responseBody.put("result", false);
+                responseBody.put("description", "코드 인증 실패");
+            } else {
+                responseBody.put("result", false);
+                responseBody.put("description", "코드 인증 실패에 시간이 만료됨");
+            }
         }
         return responseBody;
     }
@@ -219,21 +233,35 @@ public class UserService {
         String phoneKey = user.getPhonekey();
         Map<String, Object> responseBody = new HashMap<>();
 
-        boolean result = userRepository.loginPhoneCheckKey(id, phoneKey);
-        responseBody.put("result", result);
+        // 이메일 인증 여부
+        boolean codeCheck = userRepository.loginPhoneCheckKey(id, phoneKey);
+        responseBody.put("code", codeCheck);
 
-        // 문자 인증 성공 시 상태 변환
-        if (result) {
-            boolean change = userRepository.loginPhoneCheckState(id);
-            responseBody.put("change", change);
-            if (change) {
-                responseBody.put("description", "문자 인증에 성공했습니다.");
+        // 제한 시간 내 인증 여부
+        boolean timeCheck = userRepository.loginPhoneCheckTime(id);
+        responseBody.put("time", timeCheck);
+
+        if (codeCheck) {
+            if (timeCheck) {
+                boolean result = userRepository.loginPhoneCheckState(id);
+                responseBody.put("result", result);
+                if (result) {
+                    responseBody.put("description", "코드 인증 성공");
+                } else {
+                    responseBody.put("description", "코드 인증 성공하였으나 오류 발생으로 서버에 반영되지 않음");
+                }
             } else {
-                responseBody.put("description", "문자 인증에 성공했으나 오류가 발생하였습니다.");
+                responseBody.put("result", false);
+                responseBody.put("description", "코드는 맞으나 시간이 만료됨");
             }
         } else {
-            responseBody.put("change", false);
-            responseBody.put("description", "문자 인증에 실패했습니다.");
+            if (timeCheck) {
+                responseBody.put("result", false);
+                responseBody.put("description", "코드 인증 실패");
+            } else {
+                responseBody.put("result", false);
+                responseBody.put("description", "코드 인증 실패에 시간이 만료됨");
+            }
         }
         return responseBody;
     }

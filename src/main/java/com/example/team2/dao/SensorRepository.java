@@ -20,4 +20,5 @@ public interface SensorRepository {
     boolean checkCode(Usersensor userSensor);
     boolean updateCheckCode(Usersensor userSensor);
     List<Sensorlog> sensorLog(Sensorlog sensorlog);
+    boolean checkCodeTime(Usersensor userSensor);
 }

@@ -7,6 +7,8 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Entity
@@ -26,6 +28,8 @@ public class User {
     private Integer onlinestate;
     private Integer emailcheck;
     private Integer phonecheck;
+    private LocalDateTime emailtime;
+    private LocalDateTime phonetime;
 
     public User() {}
 

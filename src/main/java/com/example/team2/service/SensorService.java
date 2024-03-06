@@ -154,19 +154,32 @@ public class SensorService {
     public Map<String, Object> checkCode(Usersensor userSensor) {
         Map<String, Object> responseBody = new HashMap<>();
 
-        // 만약 DB에 저장된 값이랑 일치한다면?
-        if (sensorRepository.checkCode(userSensor)) {
-            // 인증상태를 1로 변환
-            boolean result = sensorRepository.updateCheckCode(userSensor);
-            responseBody.put("result",result);
-            if (result) {
-                responseBody.put("description", "코드 인증 성공");
+        boolean codeCheck = sensorRepository.checkCode(userSensor);
+        boolean timeCheck = sensorRepository.checkCodeTime(userSensor);
+        responseBody.put("code",codeCheck);
+        responseBody.put("time",timeCheck);
+
+        if (codeCheck) {
+            if (timeCheck) {
+                boolean result = sensorRepository.updateCheckCode(userSensor);
+                responseBody.put("result", result);
+                if (result) {
+                    responseBody.put("description", "코드 인증 성공");
+                } else {
+                    responseBody.put("description", "코드 인증 성공하였으나 오류 발생으로 서버에 반영되지 않음");
+                }
             } else {
-                responseBody.put("description", "코드 인증 성공하였으나 오류 발생으로 서버에 반영되지 않음");
+                responseBody.put("result", false);
+                responseBody.put("description", "코드는 맞으나 시간이 만료됨");
             }
         } else {
-            responseBody.put("result",false);
-            responseBody.put("description", "코드 인증 실패");
+            if (timeCheck) {
+                responseBody.put("result", false);
+                responseBody.put("description", "코드 인증 실패");
+            } else {
+                responseBody.put("result", false);
+                responseBody.put("description", "코드 인증 실패에 시간이 만료됨");
+            }
         }
         return responseBody;
     }
