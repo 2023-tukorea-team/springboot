@@ -12,6 +12,7 @@ public interface UserRepository {
     boolean checkPhone(String phone);
     boolean registerUser(User user);
     boolean loginUser(User user);
+    boolean logoutUser(String id);
     List checkLogin(String id);
     User loginUserInfo(String id);
     boolean loginEmailCheckCode(String id, String code);
@@ -35,4 +36,5 @@ public interface UserRepository {
     boolean updateCheckEmail0(String id);
     boolean updateCheckPhone0(String id);
     boolean updateUserProfile(User user);
+    boolean updateToken(String id, String token);
 }

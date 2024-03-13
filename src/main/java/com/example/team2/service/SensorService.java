@@ -23,13 +23,15 @@ import java.util.Random;
 public class SensorService {
 
     private final SensorRepository sensorRepository;
+    private final FcmService fcmService;
 
     @Value("${broker.address}")
     private String broker;
 
     @Autowired
-    public SensorService(SensorRepository sensorRepository) {
+    public SensorService(SensorRepository sensorRepository, FcmService fcmService) {
         this.sensorRepository = sensorRepository;
+        this.fcmService = fcmService;
     }
 
     public Map<String, Object> checkId(Sensor sensor) {
@@ -57,6 +59,18 @@ public class SensorService {
 
     public Map<String, Object> addLog(Sensorlog sensorlog) {
         try {
+            Integer warning = sensorlog.getWarning();
+            if (warning != 0) {
+                // 센서 id를 통해 일치하는 유저의 토큰을 찾아낸다.
+                List<String> tokenList = sensorRepository.findToken(sensorlog.getId());
+
+                if (warning == 1) {
+                    for (String token : tokenList) {
+                        fcmService.sendMessageByToken("사람 감지", "사람이 감지되었습니다", token);
+                    }
+                }
+            }
+
             LocalDateTime currentTime = LocalDateTime.now();
             sensorlog.setLogtime(currentTime);
 

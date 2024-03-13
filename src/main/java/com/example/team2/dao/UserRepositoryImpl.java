@@ -62,6 +62,15 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    @Transactional
+    public boolean logoutUser(String id) {
+        String sql = "UPDATE User u SET u.token = null WHERE u.id = :id";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("id", id);
+        return query.executeUpdate() > 0;
+    }
+
+    @Override
     public List<Integer> checkLogin(String id) {
         String sql = "SELECT u.emailcheck, u.phonecheck FROM User u WHERE u.id = :id";
         Query query = entityManager.createQuery(sql)
@@ -273,6 +282,16 @@ public class UserRepositoryImpl implements UserRepository {
                 .setParameter("name",user.getName())
                 .setParameter("email",user.getEmail())
                 .setParameter("phone",user.getPhone());
+        return query.executeUpdate() > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean updateToken(String id, String token) {
+        String sql = "UPDATE User u SET u.token =:token WHERE u.id = :id";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("id", id)
+                .setParameter("token", token);
         return query.executeUpdate() > 0;
     }
 }

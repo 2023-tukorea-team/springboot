@@ -97,13 +97,16 @@ public class UserService {
     }
 
     public Map<String, Object> loginUser(User user) {
+        String id = user.getId();
+        String token = user.getToken();
         Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("token", false);
 
         // 아이디와 비밀번호가 일치하여 로그인 완료 (true)
         boolean state = userRepository.loginUser(user);
         if (state) {
             // 이메일 휴대폰 인증 되었는지 확인
-            List<Object[]> checkLoginList = userRepository.checkLogin(user.getId());
+            List<Object[]> checkLoginList = userRepository.checkLogin(id);
             Object[] row = checkLoginList.get(0);
             Integer emailCheck = (Integer) row[0];
             Integer phoneCheck = (Integer) row[1];
@@ -115,7 +118,12 @@ public class UserService {
             if ((emailCheck == 1) && (phoneCheck == 1)) {
                 responseBody.put("emailcheck", true);
                 responseBody.put("phonecheck", true);
-                responseBody.put("description", "로그인에 성공했습니다.");
+                if (userRepository.updateToken(id, token)) { // 로그인 성공 -> 토큰 저장
+                    responseBody.put("token", true);
+                    responseBody.put("description", "로그인에 성공하여 토큰이 저장되었습니다.");
+                } else {
+                    responseBody.put("description", "로그인에 성공하여 토큰이 저장되지 못했습니다.");
+                }
             } else if ((emailCheck == 1) && (phoneCheck == 0)) {
                 responseBody.put("emailcheck", true);
                 responseBody.put("phonecheck", false);
@@ -134,6 +142,18 @@ public class UserService {
             responseBody.put("emailcheck", false);
             responseBody.put("phonecheck", false);
             responseBody.put("description", "아이디와 비밀번호가 일치하지 않습니다.");
+        }
+        return responseBody;
+    }
+
+    public Map<String, Object> logoutUser(User user) {
+        Map<String, Object> responseBody = new HashMap<>();
+        boolean result = userRepository.logoutUser(user.getId());
+        responseBody.put("result", result);
+        if (result) {
+            responseBody.put("description", "로그아웃에 성공했습니다.");
+        } else {
+            responseBody.put("description", "로그아웃에 실패했습니다.");
         }
         return responseBody;
     }

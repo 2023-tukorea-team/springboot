@@ -1,23 +1,27 @@
 package com.example.team2.rest;
 
-import com.example.team2.entity.Sensorlog;
 import com.example.team2.entity.User;
+import com.example.team2.service.FcmService;
 import com.example.team2.service.UserService;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
+@Slf4j
 public class UserRestController {
 
     private final UserService userService;
+    private final FcmService fcmService;
 
     @Autowired
-    public UserRestController(UserService userService) {
+    public UserRestController(UserService userService, FcmService fcmService) {
         this.userService = userService;
+        this.fcmService = fcmService;
     }
 
     @GetMapping("/")
@@ -47,10 +51,16 @@ public class UserRestController {
         return ResponseEntity.ok(userService.registerUser(user));
     }
 
-    // id, pw -> 로그인 성공 유무 + 추가적인 인증 필요 유무
+    // id, pw, token -> 로그인 성공 유무 + 추가적인 인증 필요 유무
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> loginUser(@RequestBody User user) {
         return ResponseEntity.ok(userService.loginUser(user));
+    }
+
+    // id -> 로그아웃 성공 유무
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, Object>> logoutUser(@RequestBody User user) {
+        return ResponseEntity.ok(userService.logoutUser(user));
     }
 
     // id -> User(id, name, email, phone)
@@ -120,5 +130,11 @@ public class UserRestController {
     @PostMapping("/user/profile/update")
     public ResponseEntity<Map<String, Object>> updateUserProfile(@RequestBody User user) {
         return ResponseEntity.ok(userService.updateUserProfile(user));
+    }
+
+    @PostMapping("/message/fcm/token")
+    public ResponseEntity sendMessageToken(@RequestBody User user) throws FirebaseMessagingException{
+        fcmService.sendMessageByToken("알림 감지", "알림이 감지되었습니다", user.getToken());
+        return ResponseEntity.ok().build();
     }
 }

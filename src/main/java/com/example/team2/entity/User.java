@@ -30,6 +30,7 @@ public class User {
     private Integer phonecheck;
     private LocalDateTime emailtime;
     private LocalDateTime phonetime;
+    private String token;
 
     public User() {}
 

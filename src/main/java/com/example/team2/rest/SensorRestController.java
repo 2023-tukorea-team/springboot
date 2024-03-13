@@ -4,6 +4,7 @@ import com.example.team2.entity.Sensor;
 import com.example.team2.entity.Sensorlog;
 import com.example.team2.entity.Usersensor;
 import com.example.team2.service.SensorService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@Slf4j
 public class SensorRestController {
 
     @Autowired

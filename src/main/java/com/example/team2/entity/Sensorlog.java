@@ -23,14 +23,16 @@ public class Sensorlog {
     private Integer person;
     private Integer speed;
     private LocalDateTime logtime;
+    private Integer warning;
 
     public Sensorlog() {}
 
-    public Sensorlog(String id, Integer start, Integer door, Integer person, Integer speed) {
+    public Sensorlog(String id, Integer start, Integer door, Integer person, Integer speed, Integer warning) {
         this.id = id;
         this.start = start;
         this.door = door;
         this.person = person;
         this.speed = speed;
+        this.warning = warning;
     }
 }

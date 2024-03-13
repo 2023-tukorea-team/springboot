@@ -21,4 +21,5 @@ public interface SensorRepository {
     boolean updateCheckCode(Usersensor userSensor);
     List<Sensorlog> sensorLog(Sensorlog sensorlog);
     boolean checkCodeTime(Usersensor userSensor);
+    List<String> findToken(String id);
 }

@@ -27,6 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-mail' // 이메일인증
     implementation 'net.nurigo:sdk:4.3.0' // coolsms 문자인증
+    implementation 'com.google.firebase:firebase-admin:9.2.0'
     implementation 'org.springframework.boot:spring-boot-starter-integration'
     implementation 'org.springframework.integration:spring-integration-mqtt'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3'

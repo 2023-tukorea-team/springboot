@@ -139,4 +139,13 @@ public class SensorRepositoryImpl implements SensorRepository {
         Long count = (Long) query.getSingleResult();
         return count > 0;
     }
+
+    @Override
+    public List<String> findToken(String sensorid) {
+        Query query = entityManager.createQuery( "SELECT u.token FROM Usersensor us JOIN User u ON us.userid = u.id " +
+                "WHERE us.direct = 1 AND us.sensorid = :sensorid AND u.token IS NOT NULL");
+        query.setParameter("sensorid", sensorid);
+        List<String> stringList = query.getResultList();
+        return stringList;
+    }
 }
