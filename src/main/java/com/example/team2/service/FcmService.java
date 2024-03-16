@@ -14,6 +14,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.TimeZone;
 
 @Service
 @RequiredArgsConstructor
@@ -31,10 +32,10 @@ public class FcmService {
     @Value("${fcm.project-id}")
     private String projectId;
 
-
     // 의존성 주입이 이루어진 후 초기화를 수행한다.
     @PostConstruct
     public void initialize() throws IOException {
+
         //Firebase 프로젝트 정보를 FireBaseOptions에 입력해준다.
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(new ClassPathResource(serviceAccountFilePath).getInputStream()))

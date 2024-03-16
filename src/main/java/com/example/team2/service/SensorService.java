@@ -205,12 +205,16 @@ public class SensorService {
         sendMessage("request", sensorlog.getId(), jsonCode);
 
         // 기다림 (3초)
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        // try {
+        // Thread.sleep(3000);
+        // } catch (InterruptedException e) {
+        //    throw new RuntimeException(e);
+        //}
         // 로그 가져오기
         return sensorRepository.sensorLog(sensorlog);
+    }
+
+    public List<Usersensor> searchSensorUserList(Usersensor usersensor) {
+        return sensorRepository.searchSensorUserList(usersensor.getUserid());
     }
 }

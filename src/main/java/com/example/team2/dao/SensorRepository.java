@@ -22,4 +22,5 @@ public interface SensorRepository {
     List<Sensorlog> sensorLog(Sensorlog sensorlog);
     boolean checkCodeTime(Usersensor userSensor);
     List<String> findToken(String id);
+    List<Usersensor> searchSensorUserList(String userid);
 }

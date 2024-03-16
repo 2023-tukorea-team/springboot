@@ -66,4 +66,11 @@ public class SensorRestController {
     public ResponseEntity<List<Sensorlog>> requestLog(@RequestBody Sensorlog sensorlog) {
         return ResponseEntity.ok(sensorService.requestLog(sensorlog));
     }
+
+    // 사용자와 연결된 기기 확인
+    // id ->
+    @PostMapping("/usersensor/list")
+    public ResponseEntity<List<Usersensor>> searchSensorUserList(@RequestBody Usersensor usersensor) {
+        return ResponseEntity.ok(sensorService.searchSensorUserList(usersensor));
+    }
 }
