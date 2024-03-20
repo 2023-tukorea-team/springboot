@@ -8,6 +8,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,16 @@ public class SensorService {
     private final FcmService fcmService;
 
     @Value("${broker.address}")
-    private String broker;
+    private String brokerAddress;
+
+    @Value("${broker.username}")
+    private String brokerUsername;
+
+    @Value("${broker.password}")
+    private String brokerPassword;
+
+    @Value("${broker.clientid}")
+    private String brokerClientId;
 
     @Autowired
     public SensorService(SensorRepository sensorRepository, FcmService fcmService) {
@@ -58,6 +68,9 @@ public class SensorService {
     }
 
     public Map<String, Object> addLog(Sensorlog sensorlog) {
+        LocalDateTime currentTime = LocalDateTime.now();
+        sensorlog.setLogtime(currentTime);
+
         try {
             Integer warning = sensorlog.getWarning();
             if (warning != 0) {
@@ -70,9 +83,6 @@ public class SensorService {
                     }
                 }
             }
-
-            LocalDateTime currentTime = LocalDateTime.now();
-            sensorlog.setLogtime(currentTime);
 
             boolean result = sensorRepository.AddLog(sensorlog);
 
@@ -98,6 +108,9 @@ public class SensorService {
     }
 
     public Map<String, Object> selectSensor(Usersensor userSensor) {
+        LocalDateTime currentTime = LocalDateTime.now();
+        userSensor.setCodetime(currentTime);
+
         Map<String, Object> responseBody = new HashMap<>();
         // 기존에 이미 존재하는 지 확인하기
         boolean checkUserSensor = sensorRepository.checkUserSensor(userSensor);
@@ -124,9 +137,9 @@ public class SensorService {
 
         // 라즈베리파이에 전송
         Map<String, Object> jsonCode = new HashMap<>();
-        jsonCode.put("id", userSensor.getSensorid());
+        jsonCode.put("id", userSensor.getUserid());
         jsonCode.put("code", code);
-        sendMessage("code", userSensor.getSensorid(), jsonCode);
+        sendMessage("code/" + userSensor.getSensorid(), jsonCode);
 
         return responseBody;
     }
@@ -146,11 +159,14 @@ public class SensorService {
         return null;
     }
 
-    private void sendMessage(String topic, String id, Object data) {
+    private void sendMessage(String topic, Object data) {
+        MemoryPersistence persistence = new MemoryPersistence();
         try {
-            MqttClient mqttClient = new MqttClient(broker, id);
+            MqttClient mqttClient = new MqttClient(brokerAddress, brokerClientId, persistence);
             MqttConnectOptions connOpts = new MqttConnectOptions();
             connOpts.setCleanSession(true);
+            connOpts.setUserName(brokerUsername);
+            connOpts.setPassword(brokerPassword.toCharArray());
             mqttClient.connect(connOpts);
 
             // JSON 데이터를 문자열로 변환하여 MQTT 메시지로 설정
@@ -202,7 +218,7 @@ public class SensorService {
         // 라즈베리파이에 보내달라고 요청
         Map<String, Object> jsonCode = new HashMap<>();
         jsonCode.put("id", sensorlog.getId());
-        sendMessage("request", sensorlog.getId(), jsonCode);
+        sendMessage("log" + sensorlog.getId(), jsonCode);
 
         // 기다림 (3초)
         // try {

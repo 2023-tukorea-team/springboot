@@ -10,15 +10,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
-import java.util.TimeZone;
 
 @Component
 public class SensorRepositoryImpl implements SensorRepository {
-
-    TimeZone seoulTimeZone = TimeZone.getTimeZone("Asia/Seoul");
-    ZoneId seoulZoneId = seoulTimeZone.toZoneId();
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -97,11 +92,12 @@ public class SensorRepositoryImpl implements SensorRepository {
     @Override
     @Transactional
     public boolean updateUserSensor(Usersensor userSensor) {
-        String sql = "UPDATE Usersensor u SET u.code = :code, u.codetime = current_timestamp WHERE u.userid = :userid and u.sensorid = :sensorid";
+        String sql = "UPDATE Usersensor u SET u.code = :code, u.codetime = :codetime WHERE u.userid = :userid and u.sensorid = :sensorid";
         Query query = entityManager.createQuery(sql)
                 .setParameter("code",userSensor.getCode())
                 .setParameter("userid",userSensor.getUserid())
-                .setParameter("sensorid",userSensor.getSensorid());
+                .setParameter("sensorid",userSensor.getSensorid())
+                .setParameter("codetime",userSensor.getCodetime());
         return query.executeUpdate() > 0;
     }
 
@@ -136,7 +132,7 @@ public class SensorRepositoryImpl implements SensorRepository {
 
     @Override
     public boolean checkCodeTime(Usersensor userSensor) {
-        LocalDateTime threeMinutesAgo = LocalDateTime.now(seoulZoneId).minusMinutes(3);
+        LocalDateTime threeMinutesAgo = LocalDateTime.now().minusMinutes(3);
         Query query = entityManager.createQuery("SELECT COUNT(u) FROM Usersensor u WHERE u.userid = :userid and u.sensorid =:sensorid and u.codetime >= :threeMinutesAgo");
         query.setParameter("userid", userSensor.getUserid());
         query.setParameter("sensorid",userSensor.getSensorid());

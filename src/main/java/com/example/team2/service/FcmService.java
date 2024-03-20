@@ -35,6 +35,8 @@ public class FcmService {
     // 의존성 주입이 이루어진 후 초기화를 수행한다.
     @PostConstruct
     public void initialize() throws IOException {
+        // 서울시간으로 설정
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
 
         //Firebase 프로젝트 정보를 FireBaseOptions에 입력해준다.
         FirebaseOptions options = FirebaseOptions.builder()

@@ -8,15 +8,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
-import java.util.TimeZone;
 
 @Component
 public class UserRepositoryImpl implements UserRepository {
 
-    TimeZone seoulTimeZone = TimeZone.getTimeZone("Asia/Seoul");
-    ZoneId seoulZoneId = seoulTimeZone.toZoneId();
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -121,7 +117,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean loginEmailCheckTime(String id) {
-        LocalDateTime threeMinutesAgo = LocalDateTime.now(seoulZoneId).minusMinutes(3);
+        LocalDateTime threeMinutesAgo = LocalDateTime.now().minusMinutes(3);
         Query query = entityManager.createQuery("SELECT COUNT(u) FROM User u WHERE u.id = :id AND u.emailtime >= :threeMinutesAgo");
         query.setParameter("id",id);
         query.setParameter("threeMinutesAgo",threeMinutesAgo);
@@ -168,7 +164,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean loginPhoneCheckTime(String id) {
-        LocalDateTime threeMinutesAgo = LocalDateTime.now(seoulZoneId).minusMinutes(3);
+        LocalDateTime threeMinutesAgo = LocalDateTime.now().minusMinutes(3);
         Query query = entityManager.createQuery("SELECT COUNT(u) FROM User u WHERE u.id = :id AND u.phonetime >= :threeMinutesAgo");
         query.setParameter("id",id);
         query.setParameter("threeMinutesAgo",threeMinutesAgo);

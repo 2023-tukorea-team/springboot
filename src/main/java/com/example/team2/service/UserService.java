@@ -9,7 +9,6 @@ import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -84,6 +83,8 @@ public class UserService {
     }
 
     public Map<String, Object> registerUser(User user) {
+        user.setEmailcheck(0);
+        user.setPhonecheck(0);
         boolean result = userRepository.registerUser(user);
 
         Map<String, Object> responseBody = new HashMap<>();
