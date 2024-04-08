@@ -70,16 +70,24 @@ public class SensorService {
     public Map<String, Object> addLog(Sensorlog sensorlog) {
         LocalDateTime currentTime = LocalDateTime.now();
         sensorlog.setLogtime(currentTime);
+        String id = sensorlog.getId();
 
         try {
             Integer warning = sensorlog.getWarning();
             if (warning != 0) {
                 // 센서 id를 통해 일치하는 유저의 토큰을 찾아낸다.
-                List<String> tokenList = sensorRepository.findToken(sensorlog.getId());
+                List<String> tokenList = sensorRepository.findToken(id);
+
+                // userSensor의 state를 모두 1로 변환 (알림 확인하지 않은 상태로 변환)
+                boolean stateCheck =  sensorRepository.updateUserSensorState(id);
 
                 if (warning == 1) {
                     for (String token : tokenList) {
-                        fcmService.sendMessageByToken("사람 감지", "사람이 감지되었습니다", token);
+                        fcmService.sendMessageByToken("사람 감지", "사람이 감지되었습니다", token, id);
+                    }
+                } else {
+                    for (String token : tokenList) {
+                        fcmService.sendMessageByToken("알림 감지", "알림이 감지되었습니다", token, id);
                     }
                 }
             }
@@ -130,6 +138,7 @@ public class SensorService {
         }
         // DB에 저장 (사용자 id + 단말기 번호 + 인증번호)
         else {
+            userSensor.setState(0);
             boolean result = sensorRepository.addUserSensor(userSensor);
             responseBody.put("result", result);
             responseBody.put("description", "DB에 저장되지 않은 값으로 새로 저장");
@@ -232,5 +241,17 @@ public class SensorService {
 
     public List<Usersensor> searchSensorUserList(Usersensor usersensor) {
         return sensorRepository.searchSensorUserList(usersensor.getUserid());
+    }
+
+    public Map<String, Object> readState(Usersensor usersensor) {
+        Map<String, Object> responseBody = new HashMap<>();
+        boolean result = sensorRepository.readUserSensorState(usersensor.getUserid(), usersensor.getSensorid());
+        responseBody.put("result", result);
+        if (result) {
+            responseBody.put("description", "수정에 성공했습니다.");
+        } else {
+            responseBody.put("description", "수정에 실패했습니다.");
+        }
+        return responseBody;
     }
 }

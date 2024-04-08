@@ -83,8 +83,8 @@ public class UserService {
     }
 
     public Map<String, Object> registerUser(User user) {
-        user.setEmailcheck(0);
-        user.setPhonecheck(0);
+        user.setEmailcheck(1);
+        user.setPhonecheck(1);
         boolean result = userRepository.registerUser(user);
 
         Map<String, Object> responseBody = new HashMap<>();

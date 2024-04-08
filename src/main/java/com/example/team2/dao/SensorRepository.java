@@ -4,6 +4,7 @@ import com.example.team2.entity.Sensor;
 import com.example.team2.entity.Sensorlog;
 import com.example.team2.entity.Usersensor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,4 +24,6 @@ public interface SensorRepository {
     boolean checkCodeTime(Usersensor userSensor);
     List<String> findToken(String id);
     List<Usersensor> searchSensorUserList(String userid);
+    boolean updateUserSensorState(String id);
+    boolean readUserSensorState(String userid, String sensorid);
 }

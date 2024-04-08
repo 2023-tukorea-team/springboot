@@ -134,7 +134,7 @@ public class UserRestController {
 
     @PostMapping("/message/fcm/token")
     public ResponseEntity sendMessageToken(@RequestBody User user) throws FirebaseMessagingException{
-        fcmService.sendMessageByToken("알림 감지", "알림이 감지되었습니다", user.getToken());
+        fcmService.sendMessageByToken("알림 감지", "알림이 감지되었습니다", user.getToken(), "id");
         return ResponseEntity.ok().build();
     }
 }

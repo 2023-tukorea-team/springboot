@@ -49,13 +49,14 @@ public class FcmService {
     }
 
     // 받은 token을 이용하여 fcm를 보내는 메서드
-    public void sendMessageByToken(String title, String body,String token) throws FirebaseMessagingException{
+    public void sendMessageByToken(String title, String body, String token, String id) throws FirebaseMessagingException{
         FirebaseMessaging.getInstance().send(Message.builder()
                 .setNotification(Notification.builder()
                         .setTitle(title)
                         .setBody(body)
                         .build())
                 .setToken(token)
+                .putData("id", id)
                 .build());
     }
 

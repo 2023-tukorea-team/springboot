@@ -157,4 +157,23 @@ public class SensorRepositoryImpl implements SensorRepository {
                 .setParameter("userid",userid);
         return query.getResultList();
     }
+
+    @Override
+    @Transactional
+    public boolean updateUserSensorState(String id) {
+        String sql = "UPDATE Usersensor u SET u.state = 1 WHERE u.sensorid =:id";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("id", id);
+        return query.executeUpdate() > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean readUserSensorState(String userid, String sensorid) {
+        String sql = "UPDATE Usersensor u SET u.state = 0 WHERE u.sensorid =:sensorid AND u.userid =:userid";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("sensorid", sensorid)
+                .setParameter("userid", userid);
+        return query.executeUpdate() > 0;
+    }
 }

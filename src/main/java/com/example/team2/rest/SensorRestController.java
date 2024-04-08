@@ -56,8 +56,8 @@ public class SensorRestController {
     // 코드 확인
     // userid, sensorid, code
     @PostMapping("/sensor/checkcode")
-    public ResponseEntity<Map<String, Object>> checkCode(@RequestBody Usersensor userSensor) {
-        return ResponseEntity.ok(sensorService.checkCode(userSensor));
+    public ResponseEntity<Map<String, Object>> checkCode(@RequestBody Usersensor usersensor) {
+        return ResponseEntity.ok(sensorService.checkCode(usersensor));
     }
 
     // 모바일 앱에서 요청 -> 단말에게 로그 전달해 달라고 하기
@@ -72,5 +72,11 @@ public class SensorRestController {
     @PostMapping("/usersensor/list")
     public ResponseEntity<List<Usersensor>> searchSensorUserList(@RequestBody Usersensor usersensor) {
         return ResponseEntity.ok(sensorService.searchSensorUserList(usersensor));
+    }
+
+    // 사용자가 알림을 확인했다면 느낌표 사라지게 하기
+    @PostMapping("/usersensor/readstate")
+    public ResponseEntity<Map<String, Object>> readState(@RequestBody Usersensor usersensor) {
+        return ResponseEntity.ok(sensorService.readState(usersensor));
     }
 }

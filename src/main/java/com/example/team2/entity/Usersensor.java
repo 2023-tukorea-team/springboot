@@ -23,6 +23,7 @@ public class Usersensor {
     private Integer codecheck;
     private Integer direct;
     private LocalDateTime codetime;
+    private Integer state;
 
     public Usersensor() {}
 
