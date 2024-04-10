@@ -103,11 +103,12 @@ public class UserService {
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("token", false);
 
-        // 아이디와 비밀번호가 일치하여 로그인 완료 (true)
+        // 아이디와 비밀번호가 일치하는 지 확인 (true면 일치)
         boolean state = userRepository.loginUser(user);
+
         if (state) {
-            // 이메일 휴대폰 인증 되었는지 확인
-            List<Object[]> checkLoginList = userRepository.checkLogin(id);
+
+            List<Object[]> checkLoginList = userRepository.checkLogin(id); // 이메일 휴대폰 인증 되었는지 확인
             Object[] row = checkLoginList.get(0);
             Integer emailCheck = (Integer) row[0];
             Integer phoneCheck = (Integer) row[1];
@@ -119,11 +120,15 @@ public class UserService {
             if ((emailCheck == 1) && (phoneCheck == 1)) {
                 responseBody.put("emailcheck", true);
                 responseBody.put("phonecheck", true);
+
+                // 로그인 하면 자기 폰에 저장된 로그인 정보가 삭제 (한 폰에서 2개 이상의 로그인 방지)
+                userRepository.deleteLoginInfo(token);
+
                 if (userRepository.updateToken(id, token)) { // 로그인 성공 -> 토큰 저장
                     responseBody.put("token", true);
                     responseBody.put("description", "로그인에 성공하여 토큰이 저장되었습니다.");
                 } else {
-                    responseBody.put("description", "로그인에 성공하여 토큰이 저장되지 못했습니다.");
+                    responseBody.put("description", "로그인에 성공하였지만 토큰이 저장되지 못했습니다.");
                 }
             } else if ((emailCheck == 1) && (phoneCheck == 0)) {
                 responseBody.put("emailcheck", true);
@@ -138,7 +143,7 @@ public class UserService {
                 responseBody.put("phonecheck", false);
                 responseBody.put("description", "이메일 인증과 휴대폰 인증이 필요합니다.");
             }
-        } else {
+        } else { // 아이디 비밀번호 불일치
             responseBody.put("check", false);
             responseBody.put("emailcheck", false);
             responseBody.put("phonecheck", false);

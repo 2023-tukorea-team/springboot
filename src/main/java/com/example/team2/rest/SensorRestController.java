@@ -75,6 +75,7 @@ public class SensorRestController {
     }
 
     // 사용자가 알림을 확인했다면 느낌표 사라지게 하기
+    //userid, sensorid
     @PostMapping("/usersensor/readstate")
     public ResponseEntity<Map<String, Object>> readState(@RequestBody Usersensor usersensor) {
         return ResponseEntity.ok(sensorService.readState(usersensor));

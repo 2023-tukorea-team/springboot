@@ -37,4 +37,5 @@ public interface UserRepository {
     boolean updateCheckPhone0(String id);
     boolean updateUserProfile(User user);
     boolean updateToken(String id, String token);
+    boolean deleteLoginInfo(String token);
 }

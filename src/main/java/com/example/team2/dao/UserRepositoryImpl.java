@@ -295,4 +295,13 @@ public class UserRepositoryImpl implements UserRepository {
                 .setParameter("token", token);
         return query.executeUpdate() > 0;
     }
+
+    @Override
+    @Transactional
+    public boolean deleteLoginInfo(String token) {
+        String sql = "UPDATE User u SET u.token = null WHERE u.token = :token";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("token", token);
+        return query.executeUpdate() > 0;
+    }
 }
