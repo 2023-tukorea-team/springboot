@@ -136,9 +136,10 @@ public class SensorService {
                 responseBody.put("description", "DB에 저장된 값이며 인증번호 수정 실패");
             }
         }
-        // DB에 저장 (사용자 id + 단말기 번호 + 인증번호)
+        // DB에 저장 (사용자 id + 단말기 번호 + 인증번호 + 이름(초기는 단말기 번호와 일치)
         else {
             userSensor.setState(0);
+            userSensor.setName(userSensor.getSensorid());
             boolean result = sensorRepository.addUserSensor(userSensor);
             responseBody.put("result", result);
             responseBody.put("description", "DB에 저장되지 않은 값으로 새로 저장");
@@ -266,4 +267,17 @@ public class SensorService {
         }
         return responseBody;
     }
+
+    public Map<String, Object> renameUserSensor(Usersensor usersensor) {
+        Map<String, Object> responseBody = new HashMap<>();
+        boolean result = sensorRepository.renameUserSensor(usersensor.getUserid(), usersensor.getSensorid(), usersensor.getName());
+        responseBody.put("result", result);
+        if (result) {
+            responseBody.put("description", "이름 변경에 성공했습니다.");
+        } else {
+            responseBody.put("description", "이름 변경에 실패했습니다.");
+        }
+        return responseBody;
+    }
 }
+

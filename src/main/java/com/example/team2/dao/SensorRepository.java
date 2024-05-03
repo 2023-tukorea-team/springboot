@@ -27,4 +27,5 @@ public interface SensorRepository {
     boolean updateUserSensorState(String id);
     boolean readUserSensorState(String userid, String sensorid);
     boolean deleteUserSensor(String userid, String sensorid);
+    boolean renameUserSensor(String userid, String sensorid, String name);
 }

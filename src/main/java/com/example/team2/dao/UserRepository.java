@@ -38,4 +38,6 @@ public interface UserRepository {
     boolean updateUserProfile(User user);
     boolean updateToken(String id, String token);
     boolean deleteLoginInfo(String token);
+    boolean deleteUser(String id);
+    boolean changePw(String id, String pw);
 }

@@ -87,4 +87,11 @@ public class SensorRestController {
     public ResponseEntity<Map<String, Object>> deleteUserSensor(@RequestBody Usersensor usersensor) {
         return ResponseEntity.ok(sensorService.deleteUserSensor(usersensor));
     }
+
+    // 사용자가 단말기의 이름을 변경하는 경우
+    // userid, sensorid, name
+    @PostMapping("/usersensor/rename")
+    public ResponseEntity<Map<String, Object>> renameUserSensor(@RequestBody Usersensor usersensor) {
+        return ResponseEntity.ok(sensorService.renameUserSensor(usersensor));
+    }
 }

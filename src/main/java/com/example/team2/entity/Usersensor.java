@@ -24,6 +24,7 @@ public class Usersensor {
     private Integer direct;
     private LocalDateTime codetime;
     private Integer state;
+    private String name;
 
     public Usersensor() {}
 

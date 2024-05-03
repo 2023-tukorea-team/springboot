@@ -445,6 +445,36 @@ public class UserService {
         return responseBody;
     }
 
+    public Map<String, Object> withdrawUser(User user) {
+        Map<String, Object> responseBody = new HashMap<>();
+
+        // 회원 탈퇴
+        boolean result = userRepository.deleteUser(user.getId());
+        responseBody.put("result", result);
+
+        if (result) {
+            responseBody.put("description", "회원 탈퇴 성공");
+        } else {
+            responseBody.put("description", "회원 탈퇴 실패");
+        }
+        return responseBody;
+    }
+
+    public Map<String, Object> changePw(User user) {
+        Map<String, Object> responseBody = new HashMap<>();
+
+        // 비밀번호 변경
+        boolean result = userRepository.changePw(user.getId(), user.getPw());
+        responseBody.put("result", result);
+
+        if (result) {
+            responseBody.put("description", "비밀번호 변경 성공");
+        } else {
+            responseBody.put("description", "비밀번호 변경 실패");
+        }
+        return responseBody;
+    }
+
     private String createCode() {
         int length = 6;
         try {

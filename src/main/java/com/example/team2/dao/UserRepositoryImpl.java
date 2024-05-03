@@ -304,4 +304,23 @@ public class UserRepositoryImpl implements UserRepository {
                 .setParameter("token", token);
         return query.executeUpdate() > 0;
     }
+
+    @Override
+    @Transactional
+    public boolean deleteUser(String id) {
+        String sql = "DELETE FROM User u WHERE u.id = :id";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("id", id);
+        return query.executeUpdate() > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean changePw(String id, String pw) {
+        String sql = "UPDATE User u SET u.pw = :pw WHERE u.id = :id";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("id", id)
+                .setParameter("pw", pw);
+        return query.executeUpdate() > 0;
+    }
 }

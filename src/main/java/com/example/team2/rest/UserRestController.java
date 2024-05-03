@@ -132,6 +132,20 @@ public class UserRestController {
         return ResponseEntity.ok(userService.updateUserProfile(user));
     }
 
+    // 회원 탈퇴
+    // id
+    @PostMapping("/user/withdraw")
+    public ResponseEntity<Map<String, Object>> withdrawUser(@RequestBody User user) {
+        return ResponseEntity.ok(userService.withdrawUser(user));
+    }
+
+    // 비밀번호 변경
+    // id, pw (새로 바뀔 비밀번호)
+    @PostMapping("/user/repw")
+    public ResponseEntity<Map<String, Object>> changePw(@RequestBody User user) {
+        return ResponseEntity.ok(userService.changePw(user));
+    }
+
     @PostMapping("/message/fcm/token")
     public ResponseEntity sendMessageToken(@RequestBody User user) throws FirebaseMessagingException{
         fcmService.sendMessageByToken("알림 감지", "알림이 감지되었습니다", user.getToken(), "id");
