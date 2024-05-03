@@ -75,9 +75,16 @@ public class SensorRestController {
     }
 
     // 사용자가 알림을 확인했다면 느낌표 사라지게 하기
-    //userid, sensorid
+    // userid, sensorid
     @PostMapping("/usersensor/readstate")
     public ResponseEntity<Map<String, Object>> readState(@RequestBody Usersensor usersensor) {
         return ResponseEntity.ok(sensorService.readState(usersensor));
+    }
+
+    // 사용자가 차량 연결을 삭제한 경우
+    // userid, sensorid
+    @PostMapping("/usersensor/delete")
+    public ResponseEntity<Map<String, Object>> deleteUserSensor(@RequestBody Usersensor usersensor) {
+        return ResponseEntity.ok(sensorService.deleteUserSensor(usersensor));
     }
 }

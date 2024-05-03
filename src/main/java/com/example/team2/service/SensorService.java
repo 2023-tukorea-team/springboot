@@ -254,4 +254,16 @@ public class SensorService {
         }
         return responseBody;
     }
+
+    public Map<String, Object> deleteUserSensor(Usersensor usersensor) {
+        Map<String, Object> responseBody = new HashMap<>();
+        boolean result = sensorRepository.deleteUserSensor(usersensor.getUserid(), usersensor.getSensorid());
+        responseBody.put("result", result);
+        if (result) {
+            responseBody.put("description", "삭제에 성공했습니다.");
+        } else {
+            responseBody.put("description", "삭제에 실패했습니다.");
+        }
+        return responseBody;
+    }
 }
