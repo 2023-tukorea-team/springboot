@@ -21,6 +21,7 @@ public interface SensorRepository {
     boolean checkCode(Usersensor userSensor);
     boolean updateCheckCode(Usersensor userSensor);
     List<Sensorlog> sensorLog(Sensorlog sensorlog);
+    List<Sensorlog> sensorLog1(Sensorlog sensorlog);
     boolean checkCodeTime(Usersensor userSensor);
     List<String> findToken(String id);
     List<Usersensor> searchSensorUserList(String userid);
@@ -28,4 +29,5 @@ public interface SensorRepository {
     boolean readUserSensorState(String userid, String sensorid);
     boolean deleteUserSensor(String userid, String sensorid);
     boolean renameUserSensor(String userid, String sensorid, String name);
+    List<Sensor> locateSensor(String id);
 }

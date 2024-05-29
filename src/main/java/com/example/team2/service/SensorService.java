@@ -53,6 +53,12 @@ public class SensorService {
         responseBody.put("result", result);
         responseBody.put("entry", false);
 
+
+        if (sensor.getLatitude() == null)
+            sensor.setLatitude(37.340523);
+        if (sensor.getLongitude() == null)
+            sensor.setLongitude(126.734424);
+
         // 만약 등록되어 있다면
         if (result) {
             sensorRepository.updateTime(sensor);
@@ -240,6 +246,11 @@ public class SensorService {
         return sensorRepository.sensorLog(sensorlog);
     }
 
+    // 가장 마지막에 확인한 로그 가져오기
+    public List<Sensorlog> requestLog1(Sensorlog sensorlog) {
+        return sensorRepository.sensorLog1(sensorlog);
+    }
+
     public List<Usersensor> searchSensorUserList(Usersensor usersensor) {
         return sensorRepository.searchSensorUserList(usersensor.getUserid());
     }
@@ -278,6 +289,11 @@ public class SensorService {
             responseBody.put("description", "이름 변경에 실패했습니다.");
         }
         return responseBody;
+    }
+
+    // DB에 있는 위치 정보를 가져와야 됨
+    public List<Sensor> locateSensor(Sensor sensor) {
+        return sensorRepository.locateSensor(sensor.getId());
     }
 }
 

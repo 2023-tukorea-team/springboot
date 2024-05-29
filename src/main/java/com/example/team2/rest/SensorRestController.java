@@ -25,8 +25,8 @@ public class SensorRestController {
         this.sensorService = sensorService;
     }
 
-    // 기기를 DB에 등록 (라즈베리파이 일련 번호로 등록)
-    // id -> bool (true는 존재함, false는 존재하지 않음)
+    // 기기를 DB에 등록 (라즈베리파이 일련 번호로 등록) - 좌표는 임시로 선택으로 입력하도록 지정 (입력 하지 않을 시 (0,0)으로 가정)
+    // id, latitude, longitude -> bool (true는 존재함, false는 존재하지 않음)
     @PostMapping("/sensor/checkid")
     public ResponseEntity<Map<String, Object>> checkId(@RequestBody Sensor sensor) {
         return ResponseEntity.ok(sensorService.checkId(sensor));
@@ -60,11 +60,16 @@ public class SensorRestController {
         return ResponseEntity.ok(sensorService.checkCode(usersensor));
     }
 
-    // 모바일 앱에서 요청 -> 단말에게 로그 전달해 달라고 하기
+    // 모바일 앱에서 요청 -> 단말에게 로그 전달해 달라고 하기 (모든 로그 시간 역순으로 전달)
     // id (센서id)
     @PostMapping("/sensor/logrequest")
     public ResponseEntity<List<Sensorlog>> requestLog(@RequestBody Sensorlog sensorlog) {
         return ResponseEntity.ok(sensorService.requestLog(sensorlog));
+    }
+
+    @PostMapping("/sensor/logrequest1")
+    public ResponseEntity<List<Sensorlog>> requestLog1(@RequestBody Sensorlog sensorlog) {
+        return ResponseEntity.ok(sensorService.requestLog1(sensorlog));
     }
 
     // 사용자와 연결된 기기 확인
@@ -93,5 +98,12 @@ public class SensorRestController {
     @PostMapping("/usersensor/rename")
     public ResponseEntity<Map<String, Object>> renameUserSensor(@RequestBody Usersensor usersensor) {
         return ResponseEntity.ok(sensorService.renameUserSensor(usersensor));
+    }
+
+    // DB에서 저장된 좌표를 가져옴
+    // id -> latitude, longitude
+    @PostMapping("/sensor/locate")
+    public ResponseEntity<List<Sensor>> LocateSensor(@RequestBody Sensor sensor) {
+        return ResponseEntity.ok(sensorService.locateSensor(sensor));
     }
 }
