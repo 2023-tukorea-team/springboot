@@ -2,6 +2,7 @@ package com.example.team2.dao;
 
 import com.example.team2.entity.Sensor;
 import com.example.team2.entity.Sensorlog;
+import com.example.team2.entity.User;
 import com.example.team2.entity.Usersensor;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -214,5 +215,24 @@ public class SensorRepositoryImpl implements SensorRepository {
         Query query = entityManager.createQuery(sql)
                 .setParameter("id",id);
         return query.getResultList();
+    }
+
+    @Override
+    @Transactional
+    public boolean addChartSensor(String id, String left, String right) {
+        String sql = "UPDATE Sensor s SET s.leftdata =: left, s.rightdata =: right WHERE s.id =: id";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("id", id)
+                .setParameter("left", left)
+                .setParameter("right", right);
+        return query.executeUpdate() > 0;
+    }
+
+    @Override
+    public Sensor getChartSensor(String id) {
+        String sql = "SELECT s FROM Sensor s WHERE s.id =: id";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("id", id);
+        return (Sensor) query.getSingleResult();
     }
 }

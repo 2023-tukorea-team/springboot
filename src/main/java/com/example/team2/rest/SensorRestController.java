@@ -103,7 +103,21 @@ public class SensorRestController {
     // DB에서 저장된 좌표를 가져옴
     // id -> latitude, longitude
     @PostMapping("/sensor/locate")
-    public ResponseEntity<List<Sensor>> LocateSensor(@RequestBody Sensor sensor) {
+    public ResponseEntity<List<Sensor>> locateSensor(@RequestBody Sensor sensor) {
         return ResponseEntity.ok(sensorService.locateSensor(sensor));
+    }
+
+    // DB에 64개의 데이터 값 저장하기
+    // id, left, right
+    @PostMapping("/sensor/chart/add")
+    public ResponseEntity<Map<String, Object>> addChartSensor(@RequestBody Sensor sensor) {
+        return ResponseEntity.ok(sensorService.addChartSensor(sensor));
+    }
+
+    // DB에서 64개의 데이터 값 가져오기 (정확히는 Sensor의 모든 값 가져오기)
+    // id, left, right
+    @PostMapping("/sensor/chart/get")
+    public ResponseEntity<Sensor> getChartSensor(@RequestBody Sensor sensor) {
+        return ResponseEntity.ok(sensorService.getChartSensor(sensor));
     }
 }

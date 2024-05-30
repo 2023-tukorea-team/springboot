@@ -21,6 +21,8 @@ public class Sensor {
     private LocalDateTime logtime;
     private Double latitude;
     private Double longitude;
+    private String leftdata;
+    private String rightdata;
 
     public Sensor() {}
 

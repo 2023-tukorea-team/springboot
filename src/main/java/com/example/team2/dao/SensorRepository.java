@@ -30,4 +30,6 @@ public interface SensorRepository {
     boolean deleteUserSensor(String userid, String sensorid);
     boolean renameUserSensor(String userid, String sensorid, String name);
     List<Sensor> locateSensor(String id);
+    boolean addChartSensor(String id, String left, String right);
+    Sensor getChartSensor(String id);
 }

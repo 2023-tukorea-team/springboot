@@ -3,7 +3,9 @@ package com.example.team2.service;
 import com.example.team2.dao.SensorRepository;
 import com.example.team2.entity.Sensor;
 import com.example.team2.entity.Sensorlog;
+import com.example.team2.entity.User;
 import com.example.team2.entity.Usersensor;
+import jakarta.persistence.Query;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -294,6 +296,22 @@ public class SensorService {
     // DB에 있는 위치 정보를 가져와야 됨
     public List<Sensor> locateSensor(Sensor sensor) {
         return sensorRepository.locateSensor(sensor.getId());
+    }
+
+    public Map<String, Object> addChartSensor(Sensor sensor) {
+        Map<String, Object> responseBody = new HashMap<>();
+        boolean result = sensorRepository.addChartSensor(sensor.getId(), sensor.getLeftdata(), sensor.getRightdata());
+        responseBody.put("result", result);
+        if (result) {
+            responseBody.put("description", "데이터 추가에 성공했습니다.");
+        } else {
+            responseBody.put("description", "데이터 추가에 실패했습니다.");
+        }
+        return responseBody;
+    }
+
+    public Sensor getChartSensor(Sensor sensor) {
+        return sensorRepository.getChartSensor(sensor.getId());
     }
 }
 
