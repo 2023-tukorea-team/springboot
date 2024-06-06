@@ -108,16 +108,30 @@ public class SensorRestController {
     }
 
     // DB에 64개의 데이터 값 저장하기
-    // id, left, right
+    // id, leftdata, rightdata
     @PostMapping("/sensor/chart/add")
     public ResponseEntity<Map<String, Object>> addChartSensor(@RequestBody Sensor sensor) {
         return ResponseEntity.ok(sensorService.addChartSensor(sensor));
     }
 
     // DB에서 64개의 데이터 값 가져오기 (정확히는 Sensor의 모든 값 가져오기)
-    // id, left, right
+    // id, leftdata, rightdata
     @PostMapping("/sensor/chart/get")
     public ResponseEntity<Sensor> getChartSensor(@RequestBody Sensor sensor) {
         return ResponseEntity.ok(sensorService.getChartSensor(sensor));
+    }
+
+    // 이전에 연결했던 기기 가져오기
+    // userid
+    @PostMapping("/usersensor/recheck/get")
+    public ResponseEntity<List<Usersensor>> getRecheckSensor(@RequestBody Usersensor usersensor) {
+        return ResponseEntity.ok(sensorService.getRecheckSensor(usersensor));
+    }
+
+    // 이전에 연결했던 기기 인증번호 없이 연결하기
+    // userid, sensorid
+    @PostMapping("/usersensor/recheck/add")
+    public ResponseEntity<Map<String, Object>> addRecheckSensor(@RequestBody Usersensor usersensor) {
+        return ResponseEntity.ok(sensorService.addRecheckSensor(usersensor));
     }
 }

@@ -32,4 +32,6 @@ public interface SensorRepository {
     List<Sensor> locateSensor(String id);
     boolean addChartSensor(String id, String left, String right);
     Sensor getChartSensor(String id);
+    List<Usersensor> getRecheckSensor(String userid);
+    boolean addRecheckSensor(String userid, String sensorid);
 }

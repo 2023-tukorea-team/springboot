@@ -313,5 +313,22 @@ public class SensorService {
     public Sensor getChartSensor(Sensor sensor) {
         return sensorRepository.getChartSensor(sensor.getId());
     }
+
+    public List<Usersensor> getRecheckSensor(Usersensor usersensor) {
+        return sensorRepository.getRecheckSensor(usersensor.getUserid());
+    }
+
+    public Map<String, Object> addRecheckSensor(Usersensor usersensor) {
+        // 센서 아이디와 유저 아이디를 넣으면 연결시켜줘야 됨
+        Map<String, Object> responseBody = new HashMap<>();
+        boolean result = sensorRepository.addRecheckSensor(usersensor.getUserid(), usersensor.getSensorid());
+        responseBody.put("result", result);
+        if (result) {
+            responseBody.put("description", "연결에 성공했습니다.");
+        } else {
+            responseBody.put("description", "연결에 실패했습니다.");
+        }
+        return responseBody;
+    }
 }
 

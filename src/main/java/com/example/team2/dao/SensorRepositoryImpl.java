@@ -191,7 +191,7 @@ public class SensorRepositoryImpl implements SensorRepository {
     @Override
     @Transactional
     public boolean deleteUserSensor(String userid, String sensorid) {
-        String sql = "UPDATE Usersensor u SET u.direct = 0, u.codecheck = 0 WHERE u.sensorid =:sensorid AND u.userid =:userid";
+        String sql = "UPDATE Usersensor u SET u.direct = 0 WHERE u.sensorid =:sensorid AND u.userid =:userid";
         Query query = entityManager.createQuery(sql)
                 .setParameter("sensorid", sensorid)
                 .setParameter("userid", userid);
@@ -234,5 +234,23 @@ public class SensorRepositoryImpl implements SensorRepository {
         Query query = entityManager.createQuery(sql)
                 .setParameter("id", id);
         return (Sensor) query.getSingleResult();
+    }
+
+    @Override
+    public List<Usersensor> getRecheckSensor(String userid) {
+        String sql = "SELECT u FROM Usersensor u WHERE u.userid =:userid AND u.codecheck = 1 AND u.direct = 0";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("userid",userid);
+        return query.getResultList();
+    }
+
+    @Override
+    @Transactional
+    public boolean addRecheckSensor(String userid, String sensorid) {
+        String sql = "UPDATE Usersensor u SET u.direct = 1 WHERE u.userid =: userid AND u.sensorid =: sensorid";
+        Query query = entityManager.createQuery(sql)
+                .setParameter("userid", userid)
+                .setParameter("sensorid", sensorid);
+        return query.executeUpdate() > 0;
     }
 }
