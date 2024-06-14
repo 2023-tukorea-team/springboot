@@ -134,4 +134,18 @@ public class SensorRestController {
     public ResponseEntity<Map<String, Object>> addRecheckSensor(@RequestBody Usersensor usersensor) {
         return ResponseEntity.ok(sensorService.addRecheckSensor(usersensor));
     }
+
+    // 창문 열기
+    // userid, sensorid
+    @PostMapping("/usersensor/window/open")
+    public ResponseEntity<Map<String, Object>> openWindow(@RequestBody Usersensor usersensor) {
+        return ResponseEntity.ok(sensorService.openWindow(usersensor));
+    }
+
+    // 창문 닫기
+    // userid, sensorid
+    @PostMapping("/usersensor/window/close")
+    public ResponseEntity<Map<String, Object>> closeWindow(@RequestBody Usersensor usersensor) {
+        return ResponseEntity.ok(sensorService.closeWindow(usersensor));
+    }
 }

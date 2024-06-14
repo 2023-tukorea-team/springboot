@@ -330,5 +330,25 @@ public class SensorService {
         }
         return responseBody;
     }
+
+    public Map<String, Object> openWindow(Usersensor usersensor) {
+        Map<String, Object> responseBody = new HashMap<>();
+        Map<String, Object> jsonCode = new HashMap<>();
+        jsonCode.put("id", usersensor.getUserid());
+        jsonCode.put("request", "open");
+        sendMessage("window/" + usersensor.getSensorid(), jsonCode);
+        responseBody.put("result", true);
+        return responseBody;
+    }
+
+    public Map<String, Object> closeWindow(Usersensor usersensor) {
+        Map<String, Object> responseBody = new HashMap<>();
+        Map<String, Object> jsonCode = new HashMap<>();
+        jsonCode.put("id", usersensor.getUserid());
+        jsonCode.put("request", "close");
+        sendMessage("window/" + usersensor.getSensorid(), jsonCode);
+        responseBody.put("result", true);
+        return responseBody;
+    }
 }
 
